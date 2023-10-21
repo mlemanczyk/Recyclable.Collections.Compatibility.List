@@ -1,11 +1,15 @@
-﻿using System.Collections.ObjectModel;
+﻿// Ignore Spelling: zzz
+
+using System.Collections.ObjectModel;
 using System.Numerics;
 using Recyclable.Collections.Pools;
 
 namespace Recyclable.Collections
 {
 
+#pragma warning disable IDE1006 // This intentional so that it shows at the end of IntelliSense list
 	public static class zzzRecyclableListCompatibilityList
+#pragma warning restore IDE1006 // Naming Styles
 	{
 		public static ReadOnlyCollection<T> AsReadOnly<T>(this RecyclableList<T> list) => new(list);
 

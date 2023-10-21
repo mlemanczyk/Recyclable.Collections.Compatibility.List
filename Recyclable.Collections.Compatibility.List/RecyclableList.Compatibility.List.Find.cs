@@ -1,8 +1,12 @@
-﻿using System.Numerics;
+﻿// Ignore Spelling: zzz
+
+using System.Numerics;
 
 namespace Recyclable.Collections
 {
+#pragma warning disable IDE1006 // This intentional so that it shows at the end of IntelliSense list
 	public static class zzzRecyclableListCompatibilityListFind
+#pragma warning restore IDE1006 // Naming Styles
 	{
 		public static bool Exists<T>(this RecyclableList<T> list, Predicate<T> match)
 		{

@@ -1,10 +1,14 @@
+// Ignore Spelling: zzz
+
 using System.Collections;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 
 namespace Recyclable.Collections
 {
+#pragma warning disable IDE1006 // This intentional so that it shows at the end of IntelliSense list
 	public static class zzzRecyclableListCompatibilityListInsertRange
+#pragma warning restore IDE1006 // Naming Styles
 	{
 		private static void InsertRangeEnumerated<T>(this RecyclableList<T> list, int index, IEnumerable<T> items, int growByCount)
 		{

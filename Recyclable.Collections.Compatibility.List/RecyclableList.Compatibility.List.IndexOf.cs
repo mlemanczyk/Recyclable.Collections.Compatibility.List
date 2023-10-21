@@ -1,6 +1,10 @@
-﻿namespace Recyclable.Collections
+﻿// Ignore Spelling: zzz
+
+namespace Recyclable.Collections
 {
+#pragma warning disable IDE1006 // This intentional so that it shows at the end of IntelliSense list
 	public static class zzzRecyclableListCompatibilityListIndexOf
+#pragma warning restore IDE1006 // Naming Styles
 	{
 		public static int IndexOf<T>(this RecyclableList<T> list, T item, int index) => list._count != 0
 				? Array.IndexOf(list._memoryBlock, item, index, list._count - index)
