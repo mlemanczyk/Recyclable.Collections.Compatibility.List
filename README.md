@@ -1,4 +1,4 @@
-﻿# Recyclable.Collections.Compatibility.List# Recyclable.Collections
+﻿# Recyclable.Collections.Compatibility.List
 `Recyclable.Collections.Compatibility.List` project is an open source add-on for [Recyclable.Collections](https://github.com/mlemanczyk/Recyclable.Collections) providing `List<T>` compatibility features to the recyclable collections framework.
 
 ## Included compatibility packs

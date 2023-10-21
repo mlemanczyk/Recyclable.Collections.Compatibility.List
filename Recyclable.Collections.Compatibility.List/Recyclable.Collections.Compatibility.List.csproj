@@ -23,6 +23,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<None Include="..\logo.png" Pack="true" PackagePath="" Link="logo.png">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+
 		<None Include="..\LICENSE.md" Pack="true" PackagePath="" Link="LICENSE.md">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
