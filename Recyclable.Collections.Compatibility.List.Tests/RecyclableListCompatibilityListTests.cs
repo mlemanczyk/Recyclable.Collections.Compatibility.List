@@ -12,6 +12,29 @@ namespace Recyclable.CollectionsTests
 	public class RecyclableListCompatibilityListTests
 	{
 		[Theory]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
+		public void BinarySearchShouldFindAllItems(string testCase, IEnumerable<long> testData, int itemsCount, in long[] itemIndexes)
+		{
+			_ = testData.Any().Should().BeTrue("we need items on the list that we can look for");
+
+			// Prepare
+			using var list = new RecyclableList<long>(testData, itemsCount);
+			var expectedData = testData.ToList();
+
+			foreach (var itemIndex in itemIndexes)
+			{
+				var expectedItem = expectedData[(int)itemIndex];
+				var expected = expectedData.BinarySearch(expectedItem);
+
+				// Act
+				var actual = list.BinarySearch(expectedItem);
+
+				// Validate
+				_ = actual.Should().Be(expected);
+			}
+		}
+
+		[Theory]
 		[MemberData(nameof(RecyclableLongListTestData.SourceDataVariants), MemberType = typeof(RecyclableLongListTestData))]
 		public void ConvertAllShouldConvertAllItems(string testCase, IEnumerable<long> testData, int itemsCount)
 		{
