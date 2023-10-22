@@ -3,6 +3,7 @@ using Recyclable.Collections;
 using Recyclable.Collections.TestData;
 using Recyclable.Collections.Pools;
 using System.Numerics;
+using System.Collections;
 
 #pragma warning disable xUnit1026, RCS1163, IDE0039, IDE0060, RCS1235
 
@@ -198,6 +199,27 @@ namespace Recyclable.CollectionsTests
 
 				// Validate
 				_ = actual.Should().Be((int)itemIndex).And.Be(expected);
+			}
+		}
+
+		[Theory]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
+		public void FindIndexShouldNotAnythingWhenRangeExcludesItem(string testCase, IEnumerable<long> testData, int itemsCount, in long[] itemIndexes)
+		{
+			// Prepare
+			using var list = new RecyclableList<long>(testData, itemsCount);
+			var expectedData = testData.ToList();
+
+			foreach (var itemIndex in itemIndexes)
+			{
+				var expectedItem = expectedData[(int)itemIndex];
+				var expected = expectedData.FindIndex((int)itemIndex + 1, (int)(itemsCount - itemIndex - 1), item => item == expectedItem);
+
+				// Act
+				var actual = list.FindIndex((int)itemIndex + 1, (int)(itemsCount - itemIndex - 1), item => item == expectedItem);
+
+				// Validate
+				_ = actual.Should().Be(-1).And.Be(expected);
 			}
 		}
 
@@ -477,6 +499,82 @@ namespace Recyclable.CollectionsTests
 
 		[Theory]
 		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
+		public void InsertRangeShouldAddItemsInTheRightPosition(string testCase, IEnumerable<long> testData, int itemsCount, in long[] itemIndexes)
+		{
+			// Prepare
+			var expectedData = testData.Reverse().ToArray();
+
+			foreach (var itemIndex in itemIndexes)
+			{
+				using var list = new RecyclableList<long>(testData.Reverse(), itemsCount);
+				var expected = expectedData.ToList();
+				expected.InsertRange((int)itemIndex, testData);
+
+				if (testCase.Contains("Array[", StringComparison.OrdinalIgnoreCase))
+				{
+					list.InsertRange((int)itemIndex, (Array)testData);
+				}
+				else if (testCase.Contains("ICollection[", StringComparison.OrdinalIgnoreCase))
+				{
+					list.InsertRange((int)itemIndex, (ICollection)testData);
+				}
+				else if (testCase.Contains("ICollection<T>[", StringComparison.OrdinalIgnoreCase))
+				{
+					list.InsertRange((int)itemIndex, (ICollection<long>)testData);
+				}
+				else if (testCase.Contains("IEnumerable[", StringComparison.OrdinalIgnoreCase))
+				{
+					list.InsertRange((int)itemIndex, (IEnumerable)testData);
+				}
+				else if (testCase.Contains("IReadOnlyList<T>[", StringComparison.OrdinalIgnoreCase))
+				{
+					list.InsertRange((int)itemIndex, (IReadOnlyList<long>)testData);
+				}
+				else if (testCase.Contains("ReadOnlySpan<T>[", StringComparison.OrdinalIgnoreCase))
+				{
+					list.InsertRange((int)itemIndex, new ReadOnlySpan<long>((long[])testData));
+				}
+				else if (testCase.Contains("Span<T>[", StringComparison.OrdinalIgnoreCase))
+				{
+					list.InsertRange((int)itemIndex, new Span<long>((long[])testData));
+				}
+				else if (testData is long[] testDataArray)
+				{
+					list.InsertRange((int)itemIndex, testDataArray);
+				}
+				else if (testData is List<long> testDataList)
+				{
+					list.InsertRange((int)itemIndex, testDataList);
+				}
+				else if (testData is RecyclableList<long> testDataRecyclableList)
+				{
+					list.InsertRange((int)itemIndex, testDataRecyclableList);
+				}
+				else if (testData is RecyclableLongList<long> testDataRecyclableLongList)
+				{
+					list.InsertRange((int)itemIndex, testDataRecyclableLongList);
+				}
+				else if (testData is IList<long> testDataIList)
+				{
+					list.InsertRange((int)itemIndex, testDataIList);
+				}
+				else if (testData is IEnumerable<long> testDataIEnumerable)
+				{
+					list.InsertRange((int)itemIndex, testDataIEnumerable);
+				}
+				else
+				{
+					throw new InvalidCastException("Unknown type of test data");
+				}
+
+				// Validate
+				list.Count.Should().Be(itemsCount << 1);
+				_ = list.Should().Equal(expected);
+			}
+		}
+
+		[Theory]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
 		public void LastIndexOfShouldReturnCorrectIndexes(string testCase, IEnumerable<long> testData, int itemsCount, in long[] itemIndexes)
 		{
 			// Prepare
@@ -564,7 +662,62 @@ namespace Recyclable.CollectionsTests
 				expectedItems.InsertRange((int)itemIndex, testData);
 
 				// Act
-				list.InsertRange((int)itemIndex, testData);
+				if (testCase.Contains("Array[", StringComparison.OrdinalIgnoreCase))
+				{
+					list.InsertRange((int)itemIndex, (Array)testData);
+				}
+				else if (testCase.Contains("ICollection[", StringComparison.OrdinalIgnoreCase))
+				{
+					list.InsertRange((int)itemIndex, (ICollection)testData);
+				}
+				else if (testCase.Contains("ICollection<T>[", StringComparison.OrdinalIgnoreCase))
+				{
+					list.InsertRange((int)itemIndex, (ICollection<long>)testData);
+				}
+				else if (testCase.Contains("IEnumerable[", StringComparison.OrdinalIgnoreCase))
+				{
+					list.InsertRange((int)itemIndex, (IEnumerable)testData);
+				}
+				else if (testCase.Contains("IReadOnlyList<T>[", StringComparison.OrdinalIgnoreCase))
+				{
+					list.InsertRange((int)itemIndex, (IReadOnlyList<long>)testData);
+				}
+				else if (testCase.Contains("ReadOnlySpan<T>[", StringComparison.OrdinalIgnoreCase))
+				{
+					list.InsertRange((int)itemIndex, new ReadOnlySpan<long>((long[])testData));
+				}
+				else if (testCase.Contains("Span<T>[", StringComparison.OrdinalIgnoreCase))
+				{
+					list.InsertRange((int)itemIndex, new Span<long>((long[])testData));
+				}
+				else if (testData is long[] testDataArray)
+				{
+					list.InsertRange((int)itemIndex, testDataArray);
+				}
+				else if (testData is List<long> testDataList)
+				{
+					list.InsertRange((int)itemIndex, testDataList);
+				}
+				else if (testData is RecyclableList<long> testDataRecyclableList)
+				{
+					list.InsertRange((int)itemIndex, testDataRecyclableList);
+				}
+				else if (testData is RecyclableLongList<long> testDataRecyclableLongList)
+				{
+					list.InsertRange((int)itemIndex, testDataRecyclableLongList);
+				}
+				else if (testData is IList<long> testDataIList)
+				{
+					list.InsertRange((int)itemIndex, testDataIList);
+				}
+				else if (testData is IEnumerable<long> testDataIEnumerable)
+				{
+					list.InsertRange((int)itemIndex, testDataIEnumerable);
+				}
+				else
+				{
+					throw new InvalidCastException("Unknown type of test data");
+				}
 
 				// Validate
 				_ = list[(int)itemIndex].Should().Be(item);

@@ -1,9 +1,11 @@
 ﻿using Collections.Benchmarks.Core;
 
-namespace Recyclable.Collections.Benchmarks
+namespace Recyclable.Collections.Compatibility.List.Benchmarks
 {
-	public partial class RecyclableCollectionsCompatibilityListBenchmarks : CollectionsBenchmarksBase<CollectionsBenchmarksSource>
+	public class FindLastIndexBenchmarks : RecyclableCollectionsCompatibilityListBenchmarks
 	{
+		public override string MethodNameSuffix => "_FindLastIndex_BestAndWorstCases";
+
 		public void Array_FindLastIndex_BestAndWorstCases()
 		{
 			var data = TestObjects;

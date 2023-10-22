@@ -1,9 +1,11 @@
 ﻿using Collections.Benchmarks.Core;
 
-namespace Recyclable.Collections.Benchmarks
+namespace Recyclable.Collections.Compatibility.List.Benchmarks
 {
-	public class ConvertAllBenchmarks<T> : CollectionsBenchmarksBase<T>
+	public class ConvertAllBenchmarks : RecyclableCollectionsCompatibilityListBenchmarks
 	{
+		public override string MethodNameSuffix => "_ConvertAll";
+
 		public void Array_ConvertAll()
 		{
 			var data = TestObjects;

@@ -117,13 +117,12 @@ namespace Recyclable.Collections
 
 		public static int FindIndex<T>(this RecyclableList<T> list, int startIndex, int count, Predicate<T> match)
 		{
-			int sourceItemsCount = list._count;
+			int sourceItemsCount = Math.Min(startIndex + count, list._count);
 			if (sourceItemsCount == 0 || startIndex >= sourceItemsCount)
 			{
 				return RecyclableDefaults.ItemNotFoundIndex;
 			}
 
-			sourceItemsCount = Math.Min(sourceItemsCount, startIndex + sourceItemsCount);
 			ReadOnlySpan<T> sourceSpan = list._memoryBlock;
 			for (var itemIndex = startIndex; itemIndex < sourceItemsCount; itemIndex++)
 			{

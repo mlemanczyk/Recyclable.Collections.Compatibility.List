@@ -1,10 +1,12 @@
 ﻿using Collections.Benchmarks.Core;
 
-namespace Recyclable.Collections.Benchmarks
+namespace Recyclable.Collections.Compatibility.List.Benchmarks
 {
-	public class BinarySearchBenchmarks<T> : CollectionsBenchmarksBase<T>
+	public class BinarySearchBenchmarks : RecyclableCollectionsCompatibilityListBenchmarks
 	{
-		public void Array_BinarySearch_BestAndWorstCases()
+		public override string MethodNameSuffix => "_BinarySearch";
+
+		public void Array_BinarySearch()
 		{
 			var data = TestObjects;
 			var list = TestObjects;
@@ -16,7 +18,7 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		public void List_BinarySearch_BestAndWorstCases()
+		public void List_BinarySearch()
 		{
 			var data = TestObjects;
 			var list = TestObjectsAsList;
@@ -28,7 +30,7 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		public void PooledList_BinarySearch_BestAndWorstCases()
+		public void PooledList_BinarySearch()
 		{
 			var data = TestObjects;
 			var list = TestObjectsAsPooledList;
@@ -40,7 +42,7 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		public void RecyclableList_BinarySearch_BestAndWorstCases()
+		public void RecyclableList_BinarySearch()
 		{
 			var data = TestObjects;
 			var list = TestObjectsAsRecyclableList;
@@ -52,7 +54,7 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		// public void RecyclableLongList_BinarySearch_BestAndWorstCases()
+		// public void RecyclableLongList_BinarySearch()
 		// {
 		// 	var data = TestObjects;
 		// 	var list = TestObjectsAsRecyclableLongList;

@@ -2,6 +2,7 @@
 
 using System.Collections.ObjectModel;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using Recyclable.Collections.Pools;
 
 namespace Recyclable.Collections
@@ -13,12 +14,15 @@ namespace Recyclable.Collections
 	{
 		public static ReadOnlyCollection<T> AsReadOnly<T>(this RecyclableList<T> list) => new(list);
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 		public static int BinarySearch<T>(this RecyclableList<T> list, T item)
 			=> Array.BinarySearch(list._memoryBlock, 0, list._count, item);
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 		public static int BinarySearch<T>(this RecyclableList<T> list, T item, IComparer<T>? comparer)
 			=> Array.BinarySearch(list._memoryBlock, 0, list._count, item, comparer);
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 		public static int BinarySearch<T>(this RecyclableList<T> list, int index, int count, T item, IComparer<T>? comparer)
 			=> Array.BinarySearch(list._memoryBlock, index, count, item, comparer);
 
@@ -42,8 +46,10 @@ namespace Recyclable.Collections
 			return result;
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 		public static void CopyTo<T>(this RecyclableList<T> list, T[] array) => Array.Copy(list._memoryBlock, array, list._count);
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 		public static void CopyTo<T>(this RecyclableList<T> list, int index, T[] array, int arrayIndex, int count) => Array.Copy(list._memoryBlock, index, array, arrayIndex, count);
 
 		public static void ForEach<T>(this RecyclableList<T> list, Action<T> action)
@@ -131,42 +137,49 @@ namespace Recyclable.Collections
 			list._version++;
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 		public static void Reverse<T>(this RecyclableList<T> list)
 		{
 			Array.Reverse(list._memoryBlock, 0, list._count);
 			list._version++;
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 		public static void Reverse<T>(this RecyclableList<T> list, int index, int count)
 		{
 			Array.Reverse(list._memoryBlock, index, count);
 			list._version++;
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 		public static void Sort<T>(this RecyclableList<T> list)
 		{
 			Array.Sort(list._memoryBlock, 0, list._count);
 			list._version++;
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 		public static void Sort<T>(this RecyclableList<T> list, Comparison<T> comparison)
 		{
 			Array.Sort(list._memoryBlock, 0, list._count, new ComparisonToComparerAdapter<T>(comparison));
 			list._version++;
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 		public static void Sort<T>(this RecyclableList<T> list, IComparer<T>? comparer)
 		{
 			Array.Sort(list._memoryBlock, 0, list._count, comparer);
 			list._version++;
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 		public static void Sort<T>(this RecyclableList<T> list, int index, int count, IComparer<T>? comparer)
 		{
 			Array.Sort(list._memoryBlock, index, count, comparer);
 			list._version++;
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 		public static T[] ToArray<T>(this RecyclableList<T> list)
 		{
 			T[] result = new T[list._count];
