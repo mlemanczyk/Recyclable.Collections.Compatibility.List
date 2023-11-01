@@ -1,7 +1,5 @@
 ﻿// Ignore Spelling: zzz
 
-using System.Numerics;
-
 namespace Recyclable.Collections
 {
 #pragma warning disable IDE1006 // This intentional so that it shows at the end of IntelliSense list

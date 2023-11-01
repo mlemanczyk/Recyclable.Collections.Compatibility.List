@@ -54,16 +54,16 @@ namespace Recyclable.Collections.Compatibility.List.Benchmarks
 			}
 		}
 
-		// public void RecyclableLongList_BinarySearch()
-		// {
-		// 	var data = TestObjects;
-		// 	var list = TestObjectsAsRecyclableLongList;
-		// 	var dataCount = TestObjectCountForSlowMethods;
-		// 	for (var i = 0; i < dataCount; i++)
-		// 	{
-		// 		DoNothing(list.BinarySearch(data[i]));
-		// 		DoNothing(list.BinarySearch(data[^(i + 1)]));
-		// 	}
-		// }
+		public void RecyclableLongList_BinarySearch()
+		{
+			var data = TestObjects;
+			var list = TestObjectsAsRecyclableLongList;
+			var dataCount = TestObjectCountForSlowMethods;
+			for (var i = 0; i < dataCount; i++)
+			{
+				DoNothing.With(list.BinarySearch(data[i]));
+				DoNothing.With(list.BinarySearch(data[^(i + 1)]));
+			}
+		}
 	}
 }

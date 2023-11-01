@@ -117,7 +117,6 @@ namespace Recyclable.CollectionsTests
 			_ = testData.Any().Should().BeTrue("we need items on the list that we can look for");
 
 			// Prepare
-			
 			var comparer = Comparer<long>.Default;
 			var expectedData = testData.ToList();
 
@@ -138,6 +137,81 @@ namespace Recyclable.CollectionsTests
 
 				// Validate
 				_ = actual.Should().Be(expected);
+			}
+		}
+
+		[Theory]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
+		public void BinarySearchShouldNotFindNonExistingItemsWhenOutsideRange(string testCase, IEnumerable<long> testData, int itemsCount, int minBlockSize, in long[] itemIndexes)
+		{
+			_ = testData.Any().Should().BeTrue("we need items on the list that we can look for");
+
+			// Prepare
+			using var list = new RecyclableLongList<long>(testData, minBlockSize, initialCapacity: itemsCount);
+			var comparer = Comparer<long>.Default;
+			var expectedData = testData.ToList();
+
+			foreach (var itemIndex in itemIndexes)
+			{
+				var expectedItem = expectedData[(int)itemIndex];
+
+				// Act && Validate
+				var expected = expectedData.BinarySearch(0, (int)itemIndex, expectedItem, comparer);
+				_ = list.BinarySearch(0, (int)itemIndex, expectedItem, comparer).Should().Be(expected);
+
+				expected = expectedData.BinarySearch((int)itemIndex + 1, itemsCount - (int)itemIndex - 1, expectedItem, comparer);
+				_ = list.BinarySearch((int)itemIndex + 1, itemsCount - (int)itemIndex - 1, expectedItem, comparer).Should().Be(expected);
+			}
+		}
+
+		[Theory]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
+		public void BinarySearchShouldNotFindNonExistingItemsWhenWithCustomComparer(string testCase, IEnumerable<long> testData, int itemsCount, int minBlockSize, in long[] itemIndexes)
+		{
+			var comparer = Comparer<long>.Default;
+			_ = testData.Any().Should().BeTrue("we need items on the list that we can look for");
+
+			// Prepare
+			var expectedData = testData.ToList();
+
+			foreach (var itemIndex in itemIndexes)
+			{
+				using var list = new RecyclableLongList<long>(testData, minBlockSize, initialCapacity: itemsCount);
+				list.RemoveAt((int)itemIndex);
+				var expectedItem = expectedData[(int)itemIndex];
+				var expectedRangedData = testData.ToList();
+				expectedRangedData.RemoveAt((int)itemIndex);
+				var expected = expectedRangedData.BinarySearch(expectedItem, comparer);
+
+				// Act
+				var actual = list.BinarySearch(expectedItem, comparer);
+
+				// Validate
+				_ = actual.Should().Be(expected);
+			}
+		}
+
+		[Theory]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
+		public void BinarySearchShouldThrowArgumentOutOfRangeWhenOutsideRange(string testCase, IEnumerable<long> testData, int itemsCount, int minBlockSize, in long[] itemIndexes)
+		{
+			_ = testData.Any().Should().BeTrue("we need items on the list that we can look for");
+
+			// Prepare
+			using var list = new RecyclableLongList<long>(testData, minBlockSize, initialCapacity: itemsCount);
+			var comparer = Comparer<long>.Default;
+			var expectedData = testData.ToList();
+
+			foreach (var itemIndex in itemIndexes)
+			{
+				var expectedItem = expectedData[(int)itemIndex];
+
+				// Act && Validate
+				Assert.Throws<ArgumentOutOfRangeException>(() => _ = expectedData.BinarySearch(-1, (int)itemIndex, expectedItem, comparer));
+				Assert.Throws<ArgumentOutOfRangeException>(() => _ = list.BinarySearch(-1, (int)itemIndex, expectedItem, comparer));
+
+				Assert.Throws<ArgumentException>(() => _ = expectedData.BinarySearch((int)itemIndex + 1, itemsCount, expectedItem, comparer));
+				Assert.Throws<ArgumentException>(() => _ = list.BinarySearch((int)itemIndex + 1, itemsCount, expectedItem, comparer));
 			}
 		}
 

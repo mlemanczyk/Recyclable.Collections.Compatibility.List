@@ -3,6 +3,7 @@
 using System.Collections.ObjectModel;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using Recyclable.Collections.Compatibility.List.Properties;
 using Recyclable.Collections.Pools;
 
 namespace Recyclable.Collections
@@ -23,8 +24,9 @@ namespace Recyclable.Collections
 			=> Array.BinarySearch(list._memoryBlock, 0, list._count, item, comparer);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-		public static int BinarySearch<T>(this RecyclableList<T> list, int index, int count, T item, IComparer<T>? comparer)
-			=> Array.BinarySearch(list._memoryBlock, index, count, item, comparer);
+		public static int BinarySearch<T>(this RecyclableList<T> list, int index, int count, T item, IComparer<T>? comparer) => list._count - index < count
+			? throw new ArgumentException(Exceptions.Argument_InvalidOffLen)
+			: Array.BinarySearch(list._memoryBlock, index, count, item, comparer);
 
 		public static RecyclableList<TOutput> ConvertAll<T, TOutput>(this RecyclableList<T> list, Converter<T, TOutput> converter)
 		{
