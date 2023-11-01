@@ -209,26 +209,58 @@ namespace Recyclable.Collections
 			return checked((int)~low);
 		}
 
-		public static RecyclableList<TOutput> ConvertAll<T, TOutput>(this RecyclableLongList<T> list, Converter<T, TOutput> converter)
+		public static RecyclableLongList<TOutput> ConvertAll<T, TOutput>(this RecyclableLongList<T> list, Converter<T, TOutput> converter)
 		{
-			//int itemsCount = list._count;
-			//if (itemsCount == 0)
-			//{
-			//	return new();
-			//}
+			if (list._longCount == 0)
+			{
+				return new();
+			}
 
-			//RecyclableList<TOutput> result = new(itemsCount);
-			//TOutput[] resultSpan = result._memoryBlock;			
-			//ReadOnlySpan<T> sourceSpan = list._memoryBlock;
-			//for (int bufferIndex = 0; bufferIndex < itemsCount; bufferIndex++)
-			//{
-			//	resultSpan[bufferIndex] = converter(sourceSpan[bufferIndex]);
-			//}
+			int blockIndex = 0,
+				blockSize = list._blockSize;
+			RecyclableLongList<TOutput> result = new(blockSize, list._longCount);
+			ReadOnlySpan<TOutput[]> resultMemoryBlocksSpan = result._memoryBlocks;
+			Span<TOutput> resultMemoryBlockSpan = resultMemoryBlocksSpan[0];
+			ReadOnlySpan<T[]> sourceMemoryBlocksSpan = list._memoryBlocks;
+			ReadOnlySpan<T> sourceMemoryBlockSpan = sourceMemoryBlocksSpan[0];
+			var itemIndex = 0;
+			int lastBlockWithData = list._lastBlockWithData;
+			while (blockIndex < lastBlockWithData)
+			{
+				resultMemoryBlockSpan[itemIndex] = converter(sourceMemoryBlockSpan[itemIndex]);
+				if (itemIndex + 1 == blockSize)
+				{
+					itemIndex = 0;
+					blockIndex++;
+					sourceMemoryBlockSpan = sourceMemoryBlocksSpan[blockIndex];
+					resultMemoryBlockSpan = resultMemoryBlocksSpan[blockIndex];
 
-			//result._count = itemsCount;
-			//return result;
+					if (blockIndex == lastBlockWithData)
+					{
+						break;
+					}
+				}
+				else
+				{
+					itemIndex++;
+				}
+			}
 
-			throw new NotImplementedException();
+			if (blockIndex == lastBlockWithData)
+			{
+				// We're re-using another variable for better performance
+				lastBlockWithData = list._nextItemIndex > 0 ? list._nextItemIndex : blockSize;
+				while (itemIndex < lastBlockWithData)
+				{
+					resultMemoryBlockSpan[itemIndex] = converter(sourceMemoryBlockSpan[itemIndex++]);
+				}
+			}
+
+			result._longCount = list._longCount;
+			result._nextItemBlockIndex = list._nextItemBlockIndex;
+			result._nextItemIndex = list._nextItemIndex;
+			result._lastBlockWithData = lastBlockWithData;
+			return result;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]

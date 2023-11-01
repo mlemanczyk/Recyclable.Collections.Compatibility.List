@@ -217,7 +217,7 @@ namespace Recyclable.CollectionsTests
 
 		[Theory]
 		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
-		public void ConvertAllShouldConvertAllItems(string testCase, IEnumerable<long> testData, int minBlockSize, int itemsCount)
+		public void ConvertAllShouldConvertAllItems(string testCase, IEnumerable<long> testData, int itemsCount, int minBlockSize, in long[] itemIndexes)
 		{
 			// Prepare
 			using var list = new RecyclableLongList<long>(testData, minBlockSize, initialCapacity: itemsCount);

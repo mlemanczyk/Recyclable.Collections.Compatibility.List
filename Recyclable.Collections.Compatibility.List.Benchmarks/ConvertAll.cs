@@ -40,13 +40,13 @@ namespace Recyclable.Collections.Compatibility.List.Benchmarks
 			DoNothing.With(converted);
 		}
 
-		// public void RecyclableLongList_ConvertAll()
-		// {
-		// 	var data = TestObjects;
-		// 	var list = TestObjectsAsRecyclableLongList;
-		// 	var dataCount = TestObjectCountForSlowMethods;
-		// 	using RecyclableList<long> converted = list.ConvertAll(static (item) => (long)item);
-		// 	DoNothing(converted);
-		// }
+		public void RecyclableLongList_ConvertAll()
+		{
+			var data = TestObjects;
+			var list = TestObjectsAsRecyclableLongList;
+			var dataCount = TestObjectCountForSlowMethods;
+			using RecyclableLongList<long> converted = list.ConvertAll(static (item) => (long)item);
+			DoNothing.With(converted);
+		}
 	}
 }

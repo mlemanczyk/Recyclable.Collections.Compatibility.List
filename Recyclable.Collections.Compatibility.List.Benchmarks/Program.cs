@@ -13,10 +13,10 @@ namespace Recyclable.Collections.Compatibility.List.Benchmarks
 			BenchmarkRunner.Run(new[]
 			{
 				//typeof(BinarySearchBenchmarks),
-				typeof(BinarySearchBenchmarksBestAndWorstCasesWhenConstrainedRange),
+				//typeof(BinarySearchBenchmarksBestAndWorstCasesWhenConstrainedRange),
 				//typeof(BinarySearchValueLowerThanFirstItemBenchmarks),
 				//typeof(BinarySearchValueHigherThanFirstItemBenchmarks),
-				//typeof(ConvertAllBenchmarks),
+				typeof(ConvertAllBenchmarks),
 				//typeof(ExistsBenchmarks),
 				//typeof(FindBenchmarks),
 				//typeof(FindAllBenchmarks),

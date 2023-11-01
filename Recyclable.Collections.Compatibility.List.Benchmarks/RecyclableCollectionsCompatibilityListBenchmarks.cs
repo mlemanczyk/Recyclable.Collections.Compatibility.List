@@ -6,13 +6,14 @@ namespace Recyclable.Collections.Compatibility.List.Benchmarks
 
 	public partial class RecyclableCollectionsCompatibilityListBenchmarks : DataDrivenBenchmarksBase<CollectionsBenchmarksSource>
 	{
-		[Params(CollectionsBenchmarksSource.Array)]
+		[Params(CollectionsBenchmarksSource.List)]
 		public override CollectionsBenchmarksSource BaseDataType { get => base.BaseDataType; set => base.BaseDataType = value; }
 
 		[Params(
+			CollectionsBenchmarksSource.Array,
 			//CollectionsBenchmarksSource.List,
-			//CollectionsBenchmarksSource.PooledList,
-			//CollectionsBenchmarksSource.RecyclableList,
+			CollectionsBenchmarksSource.PooledList,
+			CollectionsBenchmarksSource.RecyclableList,
 			CollectionsBenchmarksSource.RecyclableLongList
 		)]
 		public override CollectionsBenchmarksSource DataType { get => base.DataType; set => base.DataType = value; }
