@@ -36,6 +36,113 @@ namespace Recyclable.CollectionsTests
 
 		[Theory]
 		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
+		public void BinarySearchShouldFindAllItemsWhenConstrainedRange(string testCase, IEnumerable<long> testData, int itemsCount, int minBlockSize, in long[] itemIndexes)
+		{
+			_ = testData.Any().Should().BeTrue("we need items on the list that we can look for");
+
+			// Prepare
+			using var list = new RecyclableLongList<long>(testData, minBlockSize, initialCapacity: itemsCount);
+			var comparer = Comparer<long>.Default;
+			var expectedData = testData.ToList();
+
+			foreach (var itemIndex in itemIndexes)
+			{
+				var rangeSize = (int)Math.Min(itemsCount - itemIndex, 4);
+				var expectedItem = expectedData[(int)itemIndex];
+				var startItemIndex = (int)(rangeSize > 2 ? Math.Max(0, itemIndex - 2) : itemIndex);
+				var expected = expectedData.BinarySearch(startItemIndex, rangeSize, expectedItem, comparer);
+
+				// Act
+				var actual = list.BinarySearch(startItemIndex, rangeSize, expectedItem, comparer);
+
+				// Validate
+				_ = actual.Should().Be(expected);
+			}
+		}
+
+		[Theory]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
+		public void BinarySearchShouldFindAllItemsWhenWithCustomComparer(string testCase, IEnumerable<long> testData, int itemsCount, int minBlockSize, in long[] itemIndexes)
+		{
+			_ = testData.Any().Should().BeTrue("we need items on the list that we can look for");
+
+			// Prepare
+			using var list = new RecyclableLongList<long>(testData, minBlockSize, initialCapacity: itemsCount);
+			var comparer = Comparer<long>.Default;
+			var expectedData = testData.ToList();
+
+			foreach (var itemIndex in itemIndexes)
+			{
+				var expectedItem = expectedData[(int)itemIndex];
+				var expected = expectedData.BinarySearch(expectedItem, comparer);
+
+				// Act
+				var actual = list.BinarySearch(expectedItem, comparer);
+
+				// Validate
+				_ = actual.Should().Be(expected);
+			}
+		}
+
+		[Theory]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
+		public void BinarySearchShouldNotFindNonExistingItems(string testCase, IEnumerable<long> testData, int itemsCount, int minBlockSize, in long[] itemIndexes)
+		{
+			_ = testData.Any().Should().BeTrue("we need items on the list that we can look for");
+
+			// Prepare
+			var expectedData = testData.ToList();
+
+			foreach (var itemIndex in itemIndexes)
+			{
+				using var list = new RecyclableLongList<long>(testData, minBlockSize, initialCapacity: itemsCount);
+				list.RemoveAt((int)itemIndex);
+				var expectedItem = expectedData[(int)itemIndex];
+				var expectedRangedData = testData.ToList();
+				expectedRangedData.RemoveAt((int)itemIndex);
+				var expected = expectedRangedData.BinarySearch(expectedItem);
+
+				// Act
+				var actual = list.BinarySearch(expectedItem);
+
+				// Validate
+				_ = actual.Should().Be(expected);
+			}
+		}
+
+		[Theory]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
+		public void BinarySearchShouldNotFindNonExistingItemsWhenConstrainedRange(string testCase, IEnumerable<long> testData, int itemsCount, int minBlockSize, in long[] itemIndexes)
+		{
+			_ = testData.Any().Should().BeTrue("we need items on the list that we can look for");
+
+			// Prepare
+			
+			var comparer = Comparer<long>.Default;
+			var expectedData = testData.ToList();
+
+			foreach (var itemIndex in itemIndexes)
+			{
+				using var list = new RecyclableLongList<long>(testData, minBlockSize, initialCapacity: itemsCount);
+				list.RemoveAt(itemIndex);
+				var expectedItem = expectedData[(int)itemIndex];
+				var expectedRangedData = testData.ToList();
+				expectedRangedData.RemoveAt((int)itemIndex);
+				// Now we have 1 element less on the lists
+				var rangeSize = (int)Math.Max(Math.Min(itemsCount - itemIndex - 2, 4), 0);
+				int startItemIndex = (int)(rangeSize > 2 ? Math.Max(0, itemIndex - 2 - 1) : Math.Max(0, itemIndex - 1));
+				var expected = expectedRangedData.BinarySearch(startItemIndex, rangeSize, expectedItem, comparer);
+
+				// Act
+				var actual = list.BinarySearch(startItemIndex, rangeSize, expectedItem, comparer);
+
+				// Validate
+				_ = actual.Should().Be(expected);
+			}
+		}
+
+		[Theory]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
 		public void ConvertAllShouldConvertAllItems(string testCase, IEnumerable<long> testData, int minBlockSize, int itemsCount)
 		{
 			// Prepare

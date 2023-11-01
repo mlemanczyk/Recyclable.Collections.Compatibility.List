@@ -24,34 +24,210 @@ namespace Recyclable.Collections
 
 			int blockIndex = 0,
 				blockSize = list._blockSize,
-				itemIndex;
+				foundItemIndex;
 			var comparer = Comparer<T>.Default;
 			var lastFullBlockIndex = list._lastBlockWithData;
 			Span<T[]> memoryBlocksSpan = list._memoryBlocks;
 			while (blockIndex < lastFullBlockIndex)
 			{
-				itemIndex = new Span<T>(memoryBlocksSpan[blockIndex], 0, blockSize).BinarySearch(item, comparer);
-				if (itemIndex >= 0)
+				foundItemIndex = new Span<T>(memoryBlocksSpan[blockIndex], 0, blockSize).BinarySearch(item, comparer);
+				if (foundItemIndex >= 0)
 				{
-					return (blockIndex << list._blockSizePow2BitShift) + itemIndex;
+					return (blockIndex << list._blockSizePow2BitShift) + foundItemIndex;
+				}
+				else if (-foundItemIndex <= blockSize  && foundItemIndex <= RecyclableDefaults.ItemNotFoundIndex)
+				{
+					return foundItemIndex - (blockIndex << list._blockSizePow2BitShift);
 				}
 
 				blockIndex++;
 			}
 
-			itemIndex = new Span<T>(memoryBlocksSpan[blockIndex], 0, list._nextItemIndex != 0 ? list._nextItemIndex : blockSize).BinarySearch(item, comparer);
-			return itemIndex >= 0 ? (blockIndex << list._blockSizePow2BitShift) + itemIndex : RecyclableDefaults.ItemNotFoundIndex;
+			foundItemIndex = new Span<T>(memoryBlocksSpan[blockIndex], 0, list._nextItemIndex != 0 ? list._nextItemIndex : blockSize).BinarySearch(item, comparer);
+			return foundItemIndex >= 0 ? (blockIndex << list._blockSizePow2BitShift) + foundItemIndex : foundItemIndex - (blockIndex << list._blockSizePow2BitShift);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 		public static int BinarySearch<T>(this RecyclableLongList<T> list, T item, IComparer<T>? comparer)
-			//=> Array.BinarySearch(list._memoryBlock, 0, list._count, item, comparer);
-			=> throw new NotImplementedException();
+		{
+			if (list._longCount == 0)
+			{
+				return RecyclableDefaults.ItemNotFoundIndex;
+			}
+
+			comparer ??= Comparer<T>.Default;
+			int blockIndex = 0,
+				blockSize = list._blockSize,
+				foundItemIndex;
+			var lastFullBlockIndex = list._lastBlockWithData;
+			Span<T[]> memoryBlocksSpan = list._memoryBlocks;
+			while (blockIndex < lastFullBlockIndex)
+			{
+				foundItemIndex = new Span<T>(memoryBlocksSpan[blockIndex], 0, blockSize).BinarySearch(item, comparer);
+				if (foundItemIndex >= 0)
+				{
+					return (blockIndex << list._blockSizePow2BitShift) + foundItemIndex;
+				}
+
+				blockIndex++;
+			}
+
+			foundItemIndex = new Span<T>(memoryBlocksSpan[blockIndex], 0, list._nextItemIndex != 0 ? list._nextItemIndex : blockSize).BinarySearch(item, comparer);
+			return foundItemIndex >= 0 ? (blockIndex << list._blockSizePow2BitShift) + foundItemIndex : RecyclableDefaults.ItemNotFoundIndex;
+		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 		public static int BinarySearch<T>(this RecyclableLongList<T> list, int index, int count, T item, IComparer<T>? comparer)
-			//=> Array.BinarySearch(list._memoryBlock, index, count, item, comparer);
-			=> throw new NotImplementedException();
+		{
+			if (list._longCount == 0)
+			{
+				return RecyclableDefaults.ItemNotFoundIndex;
+			}
+
+			comparer ??= Comparer<T>.Default;
+			Span<T[]> memoryBlocksSpan = list._memoryBlocks;
+			byte blockShift = list._blockSizePow2BitShift;
+			int blockSizeMinus1 = list._blockSizeMinus1;
+			long low = index,
+				high = index + count - 1;
+
+			int compareResult = comparer.Compare(memoryBlocksSpan[(int)(low >> blockShift)][(int)(low & blockSizeMinus1)], item);
+			if (compareResult == 0)
+			{
+				return checked((int)low);
+			}
+			else if (compareResult > 0)
+			{
+				return RecyclableDefaults.ItemNotFoundIndex;
+			}
+
+			while (low <= high)
+			{
+				// i might overflow if lo and hi are both large positive numbers.
+				long med = low + ((high - low) >> 1);
+
+				compareResult = comparer.Compare(memoryBlocksSpan[(int)(med >> blockShift)][(int)(med & blockSizeMinus1)], item);
+				if (compareResult == 0)
+				{
+					return checked((int)med);
+				}
+
+				if (compareResult < 0)
+				{
+					low = med + 1;
+				}
+				else
+				{
+					high = med - 1;
+				}
+			}
+
+			return checked((int)~low);
+
+			// ATTEMPT 2
+			//int blockSizeMinus1 = list._blockSizeMinus1;
+			//long low = index,
+			//	high = Math.Min(index + (count != 0 ? count : list._longCount) - 1, list._longCount - 1);
+			//byte blockShift = list._blockSizePow2BitShift;
+
+			//comparer ??= Comparer<T>.Default;
+			//Span<T[]> memoryBlocksSpan = list._memoryBlocks;
+
+			//while (low <= high)
+			//{
+			//	long mid = low + ((high - low) / 2);
+
+			//	// Compare the target with the middle element of the array
+			//	int comparisonResult = comparer.Compare(item, memoryBlocksSpan[(int)mid >> blockShift][mid & blockSizeMinus1]);
+			//	if (comparisonResult == 0)
+			//	{
+			//		return (int)mid;
+			//	}
+			//	else if (comparisonResult < 0)
+			//	{
+			//		low = mid + 1;
+			//	}
+			//	else
+			//	{
+			//		high = mid - 1;
+			//		low++;
+			//	}
+			//}
+
+			//return low != 0 ? (int)-low : RecyclableDefaults.ItemNotFoundIndex ;
+
+
+			// ATTEMPT 3
+			//if (list._longCount == 0 || (count == 0 && index == 0))
+			//{
+			//	return RecyclableDefaults.ItemNotFoundIndex;
+			//}
+
+			//comparer ??= Comparer<T>.Default;
+			//byte blockSizePow2BitShift = list._blockSizePow2BitShift;
+			//int blockSize = list._blockSize,
+			//	startItemIndex = index & list._blockSizeMinus1,
+			//	blockIndex = index >> blockSizePow2BitShift,
+			//	lastItemIndex = (index + count) & list._blockSizeMinus1,
+			//	lastFullBlockIndex = ((index + count) >> blockSizePow2BitShift) - (lastItemIndex != 0 /*|| count == 1*/ ? 1 : 0);
+
+			//Span<T[]> memoryBlocksSpan = list._memoryBlocks;
+			//if (comparer.Compare(item, memoryBlocksSpan[blockIndex][startItemIndex]) < 0)
+			//{
+			//	return RecyclableDefaults.ItemNotFoundIndex;
+			//}
+
+			//int itemIndex =
+			//	new Span<T>
+			//	(
+			//		memoryBlocksSpan[blockIndex], 
+			//		startItemIndex,
+			//		Math.Max(0, Math.Min(blockSize, (int)Math.Min(count, list._longCount - startItemIndex)))
+			//	)
+			//	.BinarySearch(item, comparer);
+
+			//if (itemIndex >= 0)
+			//{
+			//	return (blockIndex << blockSizePow2BitShift) + itemIndex;
+			//}
+			//else if ((itemIndex < RecyclableDefaults.ItemNotFoundIndex || blockIndex > 0) && -itemIndex <= blockSize)
+			//{
+			//	return itemIndex - (blockIndex << blockSizePow2BitShift);
+			//}
+			////else if (blockIndex == 0)
+			////{
+			////	return itemIndex;
+			////}
+
+			//blockIndex++;
+			//while (blockIndex <= lastFullBlockIndex)
+			//{
+			//	itemIndex = new Span<T>(memoryBlocksSpan[blockIndex], 0, blockSize).BinarySearch(item, comparer);
+			//	if (itemIndex >= 0)
+			//	{
+			//		return (blockIndex << blockSizePow2BitShift) + itemIndex;
+			//	}
+			//	else if (itemIndex <= RecyclableDefaults.ItemNotFoundIndex)
+			//	{
+			//		return itemIndex - (blockIndex << blockSizePow2BitShift);
+			//	}
+
+			//	blockIndex++;
+			//}
+
+			//if (blockIndex <= list._lastBlockWithData)
+			//{
+			//	itemIndex = new Span<T>(memoryBlocksSpan[blockIndex], 0, lastItemIndex + 1).BinarySearch(item, comparer);
+			//	switch (itemIndex)
+			//	{
+			//		case >= 0: return (blockIndex << blockSizePow2BitShift) + itemIndex;
+			//		case < RecyclableDefaults.ItemNotFoundIndex: return itemIndex - (blockIndex << blockSizePow2BitShift);
+			//		case RecyclableDefaults.ItemNotFoundIndex: return -(blockIndex << blockSizePow2BitShift) - (blockSize > 1 ? 1 : 0);
+			//	}
+			//}
+
+			//return checked((int)-list._longCount);
+		}
 
 		public static RecyclableList<TOutput> ConvertAll<T, TOutput>(this RecyclableLongList<T> list, Converter<T, TOutput> converter)
 		{

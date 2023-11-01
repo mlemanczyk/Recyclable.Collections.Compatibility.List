@@ -35,6 +35,30 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
+		public void BinarySearchShouldFindAllItemsWhenWithCustomComparer(string testCase, IEnumerable<long> testData, int itemsCount, in long[] itemIndexes)
+		{
+			_ = testData.Any().Should().BeTrue("we need items on the list that we can look for");
+
+			// Prepare
+			using var list = new RecyclableList<long>(testData, itemsCount);
+			var comparer = Comparer<long>.Default;
+			var expectedData = testData.ToList();
+
+			foreach (var itemIndex in itemIndexes)
+			{
+				var expectedItem = expectedData[(int)itemIndex];
+				var expected = expectedData.BinarySearch(expectedItem, comparer);
+
+				// Act
+				var actual = list.BinarySearch(expectedItem, comparer);
+
+				// Validate
+				_ = actual.Should().Be(expected);
+			}
+		}
+
+		[Theory]
 		[MemberData(nameof(RecyclableLongListTestData.SourceDataVariants), MemberType = typeof(RecyclableLongListTestData))]
 		public void ConvertAllShouldConvertAllItems(string testCase, IEnumerable<long> testData, int itemsCount)
 		{
