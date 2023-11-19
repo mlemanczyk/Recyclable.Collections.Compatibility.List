@@ -232,6 +232,39 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
+		public void CopyToShouldCopyAllItemsInTheCorrectOrderWhenConstrainedRange(string testCase, IEnumerable<long> testData, int itemsCount, int minBlockSize, in long[] itemIndexes)
+		{
+			// Prepare
+			var expectedData = testData.ToList();
+			foreach (var itemIndex in itemIndexes)
+			{
+				var rangedItemsCount = (int)Math.Max(itemIndex, 1);
+				TestCopyTo(0, rangedItemsCount);
+
+				rangedItemsCount = (int)(itemsCount - itemIndex);
+				TestCopyTo((int)itemIndex, rangedItemsCount);
+
+				rangedItemsCount = 1;
+				TestCopyTo((int)itemIndex, rangedItemsCount);
+			}
+
+			void TestCopyTo(int itemIndex, int rangedItemsCount)
+			{
+				using var list = new RecyclableLongList<long>(testData, minBlockSize, initialCapacity: itemsCount);
+				long[] expectedItems = new long[rangedItemsCount + itemIndex];
+				expectedData.CopyTo(itemIndex, expectedItems, itemIndex, rangedItemsCount);
+				long[] actualItems = new long[rangedItemsCount + itemIndex];
+
+				// Act
+				list.CopyTo(itemIndex, actualItems, itemIndex, rangedItemsCount);
+
+				// Validate
+				_ = actualItems.Should().Equal(expectedItems);
+			}
+		}
+
+		[Theory]
 		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeVariants), MemberType = typeof(RecyclableLongListTestData))]
 		public void CopyToShouldCopyAllItemsInTheCorrectOrderWhenFromStart(string testCase, IEnumerable<long> testData, int itemsCount, int minBlockSize)
 		{

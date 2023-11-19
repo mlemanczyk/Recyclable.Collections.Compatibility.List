@@ -259,19 +259,50 @@ namespace Recyclable.Collections
 			result._longCount = list._longCount;
 			result._nextItemBlockIndex = list._nextItemBlockIndex;
 			result._nextItemIndex = list._nextItemIndex;
-			result._lastBlockWithData = lastBlockWithData;
+			result._lastBlockWithData = list._lastBlockWithData;
 			return result;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-		public static void CopyTo<T>(this RecyclableLongList<T> list, T[] array)
-			//=> Array.Copy(list._memoryBlock, array, list._count);
-			=> throw new NotImplementedException();
+		public static void CopyTo<T>(this RecyclableLongList<T> list, T[] array) => DoCopyTo(list._memoryBlocks, 0, list._blockSize, list._longCount, array, 0);
+
+		private static void DoCopyTo<T>(T[][] sourceMemoryBlocks, long startingIndex, int blockSize, long itemsCount, Array destinationArray, int destinationArrayIndex)
+		{
+			if (itemsCount <= 0)
+			{
+				return;
+			}
+
+			// TODO: Replace with bit-shifting
+			int startingItemIndex = (int)(startingIndex % blockSize);
+			int memoryBlockIndex = (int)(startingIndex / blockSize);
+			int lastItemIndex;
+
+			ReadOnlySpan<T[]> sourceMemoryBlocksSpan = new(sourceMemoryBlocks);
+			// We're using lastItemIndex as temp storage for copied count, so that we can move the destination index. That's to avoid additional var.
+			Array.Copy(sourceMemoryBlocks[memoryBlockIndex], startingItemIndex, destinationArray, destinationArrayIndex, lastItemIndex = (int)Math.Min(itemsCount, blockSize - startingItemIndex));
+			memoryBlockIndex++;
+			destinationArrayIndex += lastItemIndex;
+			// TODO: Replace with bit-shifting
+			lastItemIndex = (int)((startingIndex + itemsCount) % blockSize);
+			int lastBlockIndex = (int)Math.Min((startingIndex + itemsCount) / blockSize, sourceMemoryBlocks.Length - 1);
+
+			while(memoryBlockIndex < lastBlockIndex)
+			{
+				Array.Copy(sourceMemoryBlocksSpan[memoryBlockIndex], 0, destinationArray, destinationArrayIndex, blockSize);
+				destinationArrayIndex += blockSize;
+				memoryBlockIndex++;
+			}
+
+			if (destinationArrayIndex < destinationArray.Length && memoryBlockIndex == lastBlockIndex)
+			{
+				Array.Copy(sourceMemoryBlocksSpan[lastBlockIndex], 0, destinationArray, destinationArrayIndex, lastItemIndex > 0 ? lastItemIndex : blockSize);
+			}
+		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-		public static void CopyTo<T>(this RecyclableLongList<T> list, int index, T[] array, int arrayIndex, int count)
-			//=> Array.Copy(list._memoryBlock, index, array, arrayIndex, count);
-			=> throw new NotImplementedException();
+		//public static void CopyTo<T>(this RecyclableLongList<T> list, int index, T[] array, int arrayIndex, int count) => RecyclableLongList<T>.Helpers.CopyTo(list._memoryBlocks, index, list._blockSize, count, array, arrayIndex);
+		public static void CopyTo<T>(this RecyclableLongList<T> list, int index, T[] array, int arrayIndex, int count) => DoCopyTo(list._memoryBlocks, index, list._blockSize, count, array, arrayIndex);
 
 		public static void ForEach<T>(this RecyclableLongList<T> list, Action<T> action)
 		{
