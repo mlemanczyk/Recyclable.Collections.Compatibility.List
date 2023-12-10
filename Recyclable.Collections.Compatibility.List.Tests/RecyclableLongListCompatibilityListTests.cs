@@ -35,8 +35,8 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
-		public void BinarySearchShouldFindAllItemsWhenConstrainedRange(string testCase, IEnumerable<long> testData, int itemsCount, int minBlockSize, in long[] itemIndexes)
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexWithRangeVariants), MemberType = typeof(RecyclableLongListTestData))]
+		public void BinarySearchShouldFindAllItemsWhenConstrainedRange(string testCase, IEnumerable<long> testData, int itemsCount, int minBlockSize, in (long ItemIndex, long RangedItemsCount)[] itemRanges)
 		{
 			_ = testData.Any().Should().BeTrue("we need items on the list that we can look for");
 
@@ -45,15 +45,13 @@ namespace Recyclable.CollectionsTests
 			var comparer = Comparer<long>.Default;
 			var expectedData = testData.ToList();
 
-			foreach (var itemIndex in itemIndexes)
+			foreach (var (itemIndex, rangedItemsCount) in itemRanges)
 			{
-				var rangeSize = (int)Math.Min(itemsCount - itemIndex, 4);
 				var expectedItem = expectedData[(int)itemIndex];
-				var startItemIndex = (int)(rangeSize > 2 ? Math.Max(0, itemIndex - 2) : itemIndex);
-				var expected = expectedData.BinarySearch(startItemIndex, rangeSize, expectedItem, comparer);
+				var expected = expectedData.BinarySearch((int)itemIndex, (int)rangedItemsCount, expectedItem, comparer);
 
 				// Act
-				var actual = list.BinarySearch(startItemIndex, rangeSize, expectedItem, comparer);
+				var actual = list.BinarySearch((int)itemIndex, (int)rangedItemsCount, expectedItem, comparer);
 
 				// Validate
 				_ = actual.Should().Be(expected);
@@ -111,8 +109,8 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
-		public void BinarySearchShouldNotFindNonExistingItemsWhenConstrainedRange(string testCase, IEnumerable<long> testData, int itemsCount, int minBlockSize, in long[] itemIndexes)
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexWithRangeVariants), MemberType = typeof(RecyclableLongListTestData))]
+		public void BinarySearchShouldNotFindNonExistingItemsWhenConstrainedRange(string testCase, IEnumerable<long> testData, int itemsCount, int minBlockSize, in (long ItemIndex, long RangedItemsCount)[] itemRanges)
 		{
 			_ = testData.Any().Should().BeTrue("we need items on the list that we can look for");
 
@@ -120,20 +118,19 @@ namespace Recyclable.CollectionsTests
 			var comparer = Comparer<long>.Default;
 			var expectedData = testData.ToList();
 
-			foreach (var itemIndex in itemIndexes)
+			foreach (var (itemIndex, rangedItemsCount) in itemRanges)
 			{
 				using var list = new RecyclableLongList<long>(testData, minBlockSize, initialCapacity: itemsCount);
 				list.RemoveAt(itemIndex);
 				var expectedItem = expectedData[(int)itemIndex];
 				var expectedRangedData = testData.ToList();
 				expectedRangedData.RemoveAt((int)itemIndex);
+				var expectedRangeSize = itemIndex + rangedItemsCount < expectedRangedData.Count ? rangedItemsCount : expectedRangedData.Count - itemIndex;
 				// Now we have 1 element less on the lists
-				var rangeSize = (int)Math.Max(Math.Min(itemsCount - itemIndex - 2, 4), 0);
-				int startItemIndex = (int)(rangeSize > 2 ? Math.Max(0, itemIndex - 2 - 1) : Math.Max(0, itemIndex - 1));
-				var expected = expectedRangedData.BinarySearch(startItemIndex, rangeSize, expectedItem, comparer);
+				var expected = expectedRangedData.BinarySearch((int)itemIndex, (int)expectedRangeSize, expectedItem, comparer);
 
 				// Act
-				var actual = list.BinarySearch(startItemIndex, rangeSize, expectedItem, comparer);
+				var actual = list.BinarySearch((int)itemIndex, (int)expectedRangeSize, expectedItem, comparer);
 
 				// Validate
 				_ = actual.Should().Be(expected);
@@ -212,6 +209,9 @@ namespace Recyclable.CollectionsTests
 
 				Assert.Throws<ArgumentException>(() => _ = expectedData.BinarySearch((int)itemIndex + 1, itemsCount, expectedItem, comparer));
 				Assert.Throws<ArgumentException>(() => _ = list.BinarySearch((int)itemIndex + 1, itemsCount, expectedItem, comparer));
+
+				Assert.Throws<ArgumentOutOfRangeException>(() => _ = expectedData.BinarySearch((int)itemIndex + 1, -1, expectedItem, comparer));
+				Assert.Throws<ArgumentOutOfRangeException>(() => _ = list.BinarySearch((int)itemIndex + 1, -1, expectedItem, comparer));
 			}
 		}
 
@@ -232,32 +232,41 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
-		public void CopyToShouldCopyAllItemsInTheCorrectOrderWhenConstrainedRange(string testCase, IEnumerable<long> testData, int itemsCount, int minBlockSize, in long[] itemIndexes)
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexWithRangeVariants), MemberType = typeof(RecyclableLongListTestData))]
+		public void CopyToShouldCopyAllItemsInTheCorrectOrderWhenConstrainedIndex(string testCase, IEnumerable<long> testData, int itemsCount, int minBlockSize, in (long ItemIndex, long RangedItemsCount)[] itemIndexRanges)
 		{
 			// Prepare
 			var expectedData = testData.ToList();
-			foreach (var itemIndex in itemIndexes)
+			foreach (var (itemIndex, _) in itemIndexRanges)
 			{
-				var rangedItemsCount = (int)Math.Max(itemIndex, 1);
-				TestCopyTo(0, rangedItemsCount);
+				using var list = new RecyclableLongList<long>(testData, minBlockSize, initialCapacity: itemsCount);
+				long[] expectedItems = new long[expectedData.Count];
+				expectedData.CopyTo((int)itemIndex, expectedItems, (int)itemIndex, (int)(expectedData.Count - itemIndex));
+				long[] actualItems = new long[expectedData.Count];
 
-				rangedItemsCount = (int)(itemsCount - itemIndex);
-				TestCopyTo((int)itemIndex, rangedItemsCount);
+				// Act
+				list.CopyTo((int)itemIndex, actualItems, (int)itemIndex);
 
-				rangedItemsCount = 1;
-				TestCopyTo((int)itemIndex, rangedItemsCount);
+				// Validate
+				_ = actualItems.Should().Equal(expectedItems);
 			}
+		}
 
-			void TestCopyTo(int itemIndex, int rangedItemsCount)
+		[Theory]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexWithRangeVariants), MemberType = typeof(RecyclableLongListTestData))]
+		public void CopyToShouldCopyAllItemsInTheCorrectOrderWhenConstrainedRange(string testCase, IEnumerable<long> testData, int itemsCount, int minBlockSize, in (long ItemIndex, long RangedItemsCount)[] itemIndexRanges)
+		{
+			// Prepare
+			var expectedData = testData.ToList();
+			foreach (var (itemIndex, rangedItemsCount) in itemIndexRanges)
 			{
 				using var list = new RecyclableLongList<long>(testData, minBlockSize, initialCapacity: itemsCount);
 				long[] expectedItems = new long[rangedItemsCount + itemIndex];
-				expectedData.CopyTo(itemIndex, expectedItems, itemIndex, rangedItemsCount);
+				expectedData.CopyTo((int)itemIndex, expectedItems, (int)itemIndex, (int)rangedItemsCount);
 				long[] actualItems = new long[rangedItemsCount + itemIndex];
 
 				// Act
-				list.CopyTo(itemIndex, actualItems, itemIndex, rangedItemsCount);
+				list.CopyTo((int)itemIndex, actualItems, (int)itemIndex, (int)rangedItemsCount);
 
 				// Validate
 				_ = actualItems.Should().Equal(expectedItems);
@@ -280,6 +289,36 @@ namespace Recyclable.CollectionsTests
 			testData.ToList().CopyTo(expectedData);
 
 			_ = copiedItems.Should().Equal(testData);
+		}
+
+		[Theory]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
+		public void CopyToShouldThrowArgumentOutOfRangeWhenOutsideRange(string testCase, IEnumerable<long> testData, int itemsCount, int minBlockSize, in long[] itemIndexes)
+		{
+			_ = testData.Any().Should().BeTrue("we need items on the list that we can look for");
+
+			// Prepare
+			using var list = new RecyclableLongList<long>(testData, minBlockSize, initialCapacity: itemsCount);
+			var comparer = Comparer<long>.Default;
+			var expectedData = testData.ToList();
+			var actual = new long[itemsCount];
+
+			foreach (var itemIndex in itemIndexes)
+			{
+
+				// Act && Validate
+				Assert.Throws<ArgumentOutOfRangeException>(() => expectedData.CopyTo(-1, actual, 0, (int)itemIndex));
+				Assert.Throws<ArgumentOutOfRangeException>(() => list.CopyTo(-1, actual, 0, (int)itemIndex));
+
+				Assert.Throws<ArgumentOutOfRangeException>(() => expectedData.CopyTo(0, actual, -1, (int)itemIndex));
+				Assert.Throws<ArgumentOutOfRangeException>(() => list.CopyTo(0, actual, -1, (int)itemIndex));
+
+				Assert.Throws<ArgumentException>(() => expectedData.CopyTo(0, actual, (int)itemIndex + 1, itemsCount));
+				Assert.Throws<ArgumentException>(() => list.CopyTo(0, actual, (int)itemIndex + 1, itemsCount));
+
+				Assert.Throws<ArgumentOutOfRangeException>(() => expectedData.CopyTo(0, actual, (int)itemIndex + 1, -1));
+				Assert.Throws<ArgumentOutOfRangeException>(() => list.CopyTo(0, actual, (int)itemIndex + 1, -1));
+			}
 		}
 
 		[Theory]

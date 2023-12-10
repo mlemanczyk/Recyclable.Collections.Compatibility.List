@@ -302,8 +302,36 @@ namespace Recyclable.Collections
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 		//public static void CopyTo<T>(this RecyclableLongList<T> list, int index, T[] array, int arrayIndex, int count) => RecyclableLongList<T>.Helpers.CopyTo(list._memoryBlocks, index, list._blockSize, count, array, arrayIndex);
-		public static void CopyTo<T>(this RecyclableLongList<T> list, int index, T[] array, int arrayIndex, int count) => DoCopyTo(list._memoryBlocks, index, list._blockSize, count, array, arrayIndex);
+		public static void CopyTo<T>(this RecyclableLongList<T> list, int index, T[] array, int arrayIndex) => DoCopyTo(list._memoryBlocks, index, list._blockSize, list._longCount - index, array, arrayIndex);
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+		public static void CopyTo<T>(this RecyclableLongList<T> list, int index, T[] array, int arrayIndex, int count)
+		{
+
+			if (index < 0)
+			{
+				ThrowHelper.ThrowArgumentOutOfRangeException_Index();
+			}
+
+			if (count < 0)
+			{
+				ThrowHelper.ThrowArgumentOutOfRangeException_Count();
+			}
+
+			if (arrayIndex < 0)
+			{
+				ThrowHelper.ThrowArgumentOutOfRangeException(nameof(arrayIndex), "Parameter `arrayIndex` has invalid value. It must be within the no. of elements in the collection");
+			}
+
+			if (index + count > list._longCount || arrayIndex + count > list._longCount)
+			{
+				Compatibility.List.ThrowHelper.ThrowArgumentException_Count();
+			}
+
+			DoCopyTo(list._memoryBlocks, index, list._blockSize, count, array, arrayIndex);
+
+		}		
+			
 		public static void ForEach<T>(this RecyclableLongList<T> list, Action<T> action)
 		{
 			//int sourceItemsCount = list._count;
