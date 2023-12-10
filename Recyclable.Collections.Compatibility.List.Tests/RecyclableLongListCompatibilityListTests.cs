@@ -393,30 +393,6 @@ namespace Recyclable.CollectionsTests
 
 		[Theory]
 		[MemberData(nameof(RecyclableLongListTestData.ItemsCountTestCases), MemberType = typeof(RecyclableLongListTestData))]
-		public void FindAllShouldReturnCorrectIndexes(int itemsCount)
-		{
-			const int ExpectedItem = 1;
-
-			// Prepare
-			var testData = Enumerable.Range(0, itemsCount).Select(value => value % 2 == 0 ? ExpectedItem : -ExpectedItem);
-			using var list = new RecyclableLongList<int>(testData, initialCapacity: itemsCount);
-
-			// Act
-			using var actual = list.FindAll(x => x == ExpectedItem);
-
-			// Validate
-			var expectedData = testData.ToList().FindAll(x => x == ExpectedItem);
-
-			_ = actual.Count.Should().Be(expectedData.Count);
-			_ = actual.Should().Equal(expectedData);
-			if (expectedData.Count > 0)
-			{
-				_ = actual.Should().AllSatisfy(x => x.Should().Be(ExpectedItem)).And.Equal(expectedData);
-			}
-		}
-
-		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.ItemsCountTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void FindAllShouldNotFindNonExistingItems(int itemsCount)
 		{
 			const int ExpectedItem = 1;
@@ -433,6 +409,29 @@ namespace Recyclable.CollectionsTests
 
 			_ = foundItems.Count.Should().Be(expectedData.Count);
 			_ = foundItems.Should().Equal(expectedData);
+		}
+
+		[Theory]
+		[MemberData(nameof(RecyclableLongListTestData.ItemsCountTestCases), MemberType = typeof(RecyclableLongListTestData))]
+		public void FindAllShouldReturnCorrectIndexes(int itemsCount)
+		{
+			const int ExpectedItem = 1;
+
+			// Prepare
+			var testData = Enumerable.Range(0, itemsCount).Select(value => value % 2 == 0 ? ExpectedItem : -ExpectedItem);
+			using var list = new RecyclableLongList<int>(testData, initialCapacity: itemsCount);
+			var expectedData = testData.ToList().FindAll(x => x == ExpectedItem);
+
+			// Act
+			using var actual = list.FindAll(x => x == ExpectedItem);
+
+			// Validate
+			_ = actual.Count.Should().Be(expectedData.Count);
+			_ = actual.Should().Equal(expectedData);
+			if (expectedData.Count > 0)
+			{
+				_ = actual.Should().AllSatisfy(x => x.Should().Be(ExpectedItem)).And.Equal(expectedData);
+			}
 		}
 
 		[Theory]
