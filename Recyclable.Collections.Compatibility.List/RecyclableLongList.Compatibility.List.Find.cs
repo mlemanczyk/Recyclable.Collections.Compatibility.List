@@ -116,7 +116,7 @@ namespace Recyclable.Collections
 					if (fullBlocksItemsCount + targetItemIndex >= targetCapacity)
 					{
 						targetCapacity = RecyclableLongList<T>.Helpers.Resize(result, blockSize, result._blockSizePow2BitShift, targetCapacity << 1);
-						resultMemoryBlocksSpan = new(list._memoryBlocks);
+						resultMemoryBlocksSpan = new(result._memoryBlocks);
 					}
 					
 					if (targetItemIndex == blockSize)
@@ -158,7 +158,7 @@ namespace Recyclable.Collections
 						if (fullBlocksItemsCount + targetItemIndex >= targetCapacity)
 						{
 							targetCapacity = RecyclableLongList<T>.Helpers.Resize(result, blockSize, result._blockSizePow2BitShift, targetCapacity << 1);
-							resultMemoryBlocksSpan = new(list._memoryBlocks);
+							resultMemoryBlocksSpan = new(result._memoryBlocks);
 						}
 					
 						if (targetItemIndex == blockSize)
@@ -191,40 +191,116 @@ namespace Recyclable.Collections
 			return result;
 		}
 
-		public static RecyclableList<int> FindAllIndexes<T>(this RecyclableLongList<T> list, Predicate<T> match)
+		public static RecyclableLongList<long> FindAllIndexes<T>(this RecyclableLongList<T> list, Predicate<T> match)
 		{
-			//int sourceItemsCount = list._count;
-			//if (sourceItemsCount == 0)
-			//{
-			//	return new();
-			//}
+			if (list._longCount == 0)
+			{
+				return new();
+			}
 
-			//ReadOnlySpan<T> sourceSpan = list._memoryBlock;
-			//RecyclableList<int> result = new(sourceItemsCount >> 3);
-			//Span<int> resultSpan = result._memoryBlock;
-			//int capacity = result._capacity,
-			//	resultItemsCount = 0;
+			int sourceBlockIndex = 0,
+				blockSize = list._blockSize,
+				targetBlockIndex = 0;
+			var targetCapacity = Math.Max(list._longCount >> 3, RecyclableDefaults.InitialCapacity);
+			if (!BitOperations.IsPow2(targetCapacity))
+			{
+				targetCapacity = checked((long)BitOperations.RoundUpToPowerOf2((ulong)targetCapacity));
+			}
 
-			//for (var itemIndex = 0; itemIndex < sourceItemsCount; itemIndex++)
-			//{
-			//	if (match(sourceSpan[itemIndex]))
-			//	{
-			//		if (resultItemsCount + 1 > capacity)
-			//		{
-			//			capacity = checked((int)BitOperations.RoundUpToPowerOf2((uint)resultItemsCount + 1));
-			//			_ = RecyclableListHelpers<int>.EnsureCapacity(result, resultItemsCount, capacity);
-			//			resultSpan = result._memoryBlock;
-			//		}
+			RecyclableLongList<long> result = new(blockSize, targetCapacity);
+			ReadOnlySpan<long[]> resultMemoryBlocksSpan = result._memoryBlocks;
+			Span<long> resultMemoryBlockSpan = resultMemoryBlocksSpan[0];
+			ReadOnlySpan<T[]> sourceMemoryBlocksSpan = list._memoryBlocks;
+			ReadOnlySpan<T> sourceMemoryBlockSpan = sourceMemoryBlocksSpan[0];
+			var sourceItemIndex = 0;
+			int lastBlockWithData = list._lastBlockWithData;
+			var targetItemIndex = 0;
+			long sourceFullBlocksItemsCount = 0L,
+				targetFullBlocksItemsCount = 0L;
+			while (sourceBlockIndex < lastBlockWithData)
+			{
+				var item = sourceMemoryBlockSpan[sourceItemIndex];
+				if (match(item))
+				{
+					if (targetFullBlocksItemsCount + targetItemIndex >= targetCapacity)
+					{
+						targetCapacity = RecyclableLongList<long>.Helpers.Resize(result, blockSize, result._blockSizePow2BitShift, targetCapacity << 1);
+						resultMemoryBlocksSpan = new(result._memoryBlocks);
+					}
+					
+					if (targetItemIndex == blockSize)
+					{
+						targetItemIndex = 0;
+						resultMemoryBlockSpan = resultMemoryBlocksSpan[++targetBlockIndex];
+						targetFullBlocksItemsCount += blockSize;
+					}
 
-			//		resultSpan[resultItemsCount++] = itemIndex;
-			//	}
-			//}
+					resultMemoryBlockSpan[targetItemIndex++] = sourceFullBlocksItemsCount + sourceItemIndex;
+				}
 
-			//result._capacity = capacity;
-			//result._count = resultItemsCount;
-			//return result;
+				if (sourceItemIndex + 1 == blockSize)
+				{
+					sourceItemIndex = 0;
+					sourceBlockIndex++;
+					sourceMemoryBlockSpan = sourceMemoryBlocksSpan[sourceBlockIndex];
+					sourceFullBlocksItemsCount += blockSize;
 
-			throw new NotImplementedException();
+					if (sourceBlockIndex == lastBlockWithData)
+					{
+						break;
+					}
+				}
+				else
+				{
+					sourceItemIndex++;
+				}
+			}
+
+			if (sourceBlockIndex == lastBlockWithData)
+			{
+				// We're re-using another variable for better performance
+				lastBlockWithData = list._nextItemIndex > 0 ? list._nextItemIndex : blockSize;
+				while (sourceItemIndex < lastBlockWithData)
+				{
+					var item = sourceMemoryBlockSpan[sourceItemIndex];
+					if (match(item))
+					{
+						if (targetFullBlocksItemsCount + targetItemIndex >= targetCapacity)
+						{
+							targetCapacity = RecyclableLongList<long>.Helpers.Resize(result, blockSize, result._blockSizePow2BitShift, targetCapacity << 1);
+							resultMemoryBlocksSpan = new(result._memoryBlocks);
+						}
+					
+						if (targetItemIndex == blockSize)
+						{
+							targetItemIndex = 0;
+							resultMemoryBlockSpan = resultMemoryBlocksSpan[++targetBlockIndex];
+							targetFullBlocksItemsCount += blockSize;
+						}
+
+						resultMemoryBlockSpan[targetItemIndex++] = sourceFullBlocksItemsCount + sourceItemIndex;
+					}
+
+					sourceItemIndex++;
+				}
+			}
+
+			if (targetItemIndex == blockSize)
+			{
+				result._nextItemBlockIndex = targetBlockIndex + 1;
+				result._nextItemIndex = 0;
+				result._lastBlockWithData = targetBlockIndex;
+			}
+			else
+			{
+				result._nextItemBlockIndex = targetBlockIndex;
+				result._nextItemIndex = targetItemIndex;
+				result._lastBlockWithData = targetBlockIndex;
+			}
+
+			result._longCount = targetFullBlocksItemsCount + targetItemIndex;
+			result._capacity = targetCapacity;
+			return result;
 		}
 
 		public static int FindIndex<T>(this RecyclableLongList<T> list, int startIndex, int count, Predicate<T> match)
