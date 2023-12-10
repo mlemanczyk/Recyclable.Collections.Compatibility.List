@@ -8,24 +8,55 @@ namespace Recyclable.Collections
 	{
 		public static bool Exists<T>(this RecyclableLongList<T> list, Predicate<T> match)
 		{
-			//int sourceItemsCount = list._count;
-			//if (sourceItemsCount == 0)
-			//{
-			//	return false;
-			//}
+			if (list._longCount == 0)
+			{
+				return false;
+			}
 
-			//ReadOnlySpan<T> sourceSpan = list._memoryBlock;
-			//for (var itemIndex = 0; itemIndex < sourceItemsCount; itemIndex++)
-			//{
-			//	if (match(sourceSpan[itemIndex]))
-			//	{
-			//		return true;
-			//	}
-			//}
+			int blockIndex = 0,
+				blockSize = list._blockSize;
+			ReadOnlySpan<T[]> sourceMemoryBlocksSpan = list._memoryBlocks;
+			ReadOnlySpan<T> sourceMemoryBlockSpan = sourceMemoryBlocksSpan[0];
+			var itemIndex = 0;
+			int lastBlockWithData = list._lastBlockWithData;
+			while (blockIndex < lastBlockWithData)
+			{
+				if (match(sourceMemoryBlockSpan[itemIndex]))
+				{
+					return true;
+				}
 
-			//return false;
+				if (itemIndex + 1 == blockSize)
+				{
+					itemIndex = 0;
+					blockIndex++;
+					sourceMemoryBlockSpan = sourceMemoryBlocksSpan[blockIndex];
 
-			throw new NotImplementedException();
+					if (blockIndex == lastBlockWithData)
+					{
+						break;
+					}
+				}
+				else
+				{
+					itemIndex++;
+				}
+			}
+
+			if (blockIndex == lastBlockWithData)
+			{
+				// We're re-using another variable for better performance
+				lastBlockWithData = list._nextItemIndex > 0 ? list._nextItemIndex : blockSize;
+				while (itemIndex < lastBlockWithData)
+				{
+					if (match(sourceMemoryBlockSpan[itemIndex++]))
+					{
+						return true;
+					}
+				}
+			}
+
+			return false;
 		}
 
 		public static T? Find<T>(this RecyclableLongList<T> list, Predicate<T> match)
