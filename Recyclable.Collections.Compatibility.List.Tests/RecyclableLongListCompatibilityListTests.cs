@@ -47,7 +47,13 @@ namespace Recyclable.CollectionsTests
 
 			foreach (var (itemIndex, rangedItemsCount) in itemRanges)
 			{
-				var expectedItem = expectedData[(int)itemIndex];
+				TestWith(list, comparer, expectedData, itemIndex, rangedItemsCount, expectedData[(int)itemIndex]);
+				TestWith(list, comparer, expectedData, itemIndex, rangedItemsCount, expectedData[Math.Min((int)(itemIndex + rangedItemsCount), itemsCount - 1)]);
+				TestWith(list, comparer, expectedData, itemIndex, rangedItemsCount, expectedData[(int)(itemIndex + (rangedItemsCount >> 1))]);
+			}
+
+			static void TestWith(RecyclableLongList<long> list, Comparer<long> comparer, List<long> expectedData, long itemIndex, long rangedItemsCount, long expectedItem)
+			{
 				var expected = expectedData.BinarySearch((int)itemIndex, (int)rangedItemsCount, expectedItem, comparer);
 
 				// Act
@@ -138,8 +144,8 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
-		public void BinarySearchShouldNotFindNonExistingItemsWhenOutsideRange(string testCase, IEnumerable<long> testData, int itemsCount, int minBlockSize, in long[] itemIndexes)
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexWithRangeVariants), MemberType = typeof(RecyclableLongListTestData))]
+		public void BinarySearchShouldNotFindNonExistingItemsWhenOutsideRange(string testCase, IEnumerable<long> testData, int itemsCount, int minBlockSize, in (long ItemIndex, long RangedItemsCount)[] itemRanges)
 		{
 			_ = testData.Any().Should().BeTrue("we need items on the list that we can look for");
 
@@ -148,7 +154,7 @@ namespace Recyclable.CollectionsTests
 			var comparer = Comparer<long>.Default;
 			var expectedData = testData.ToList();
 
-			foreach (var itemIndex in itemIndexes)
+			foreach (var (itemIndex, rangedItemsCount) in itemRanges)
 			{
 				var expectedItem = expectedData[(int)itemIndex];
 
@@ -158,6 +164,10 @@ namespace Recyclable.CollectionsTests
 
 				expected = expectedData.BinarySearch((int)itemIndex + 1, itemsCount - (int)itemIndex - 1, expectedItem, comparer);
 				_ = list.BinarySearch((int)itemIndex + 1, itemsCount - (int)itemIndex - 1, expectedItem, comparer).Should().Be(expected);
+
+				expectedItem--;
+				expected = expectedData.BinarySearch((int)itemIndex, (int)rangedItemsCount, expectedItem, comparer);
+				_ = list.BinarySearch((int)itemIndex, (int)rangedItemsCount, expectedItem, comparer).Should().Be(expected);
 			}
 		}
 
@@ -457,44 +467,55 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
-		public void FindIndexShouldReturnCorrectIndexesWhenConstrainedCount(string testCase, IEnumerable<long> testData, int itemsCount, in long[] itemIndexes)
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexWithRangeVariants), MemberType = typeof(RecyclableLongListTestData))]
+		public void FindIndexShouldReturnCorrectIndexesWhenConstrainedCount(string testCase, IEnumerable<long> testData, int itemsCount, int minBlockSize, in (long ItemIndex, long RangedItemsCount)[] itemRanges)
 		{
 			// Prepare
 			using var list = new RecyclableLongList<long>(testData, initialCapacity: itemsCount);
 			var expectedData = testData.ToList();
 
-			foreach (var itemIndex in itemIndexes)
+			foreach (var (itemIndex, rangedItemsCount) in itemRanges)
 			{
-				var expectedItem = expectedData[(int)itemIndex];
-				var expected = expectedData.FindIndex((int)itemIndex, (int)(itemsCount - itemIndex), item => item == expectedItem);
+				TestWith(itemsCount, list, expectedData, itemIndex, rangedItemsCount, expectedData[(int)itemIndex]);
+				TestWith(itemsCount, list, expectedData, itemIndex, rangedItemsCount, expectedData[Math.Min((int)(itemIndex + rangedItemsCount), itemsCount - 1)]);
+				TestWith(itemsCount, list, expectedData, itemIndex, rangedItemsCount, expectedData[(int)(itemIndex + (rangedItemsCount >> 1))]);
+			}
+
+			static void TestWith(int itemsCount, RecyclableLongList<long> list, List<long> expectedData, long itemIndex, long rangedItemsCount, long expectedItem)
+			{
+				var expected = expectedData.FindIndex((int)itemIndex, (int)rangedItemsCount, item => item == expectedItem);
 
 				// Act
-				var actual = list.FindIndex((int)itemIndex, (int)(itemsCount - itemIndex), item => item == expectedItem);
+				var actual = list.FindIndex((int)itemIndex, (int)rangedItemsCount, item => item == expectedItem);
 
 				// Validate
-				_ = actual.Should().Be((int)itemIndex).And.Be(expected);
+				_ = actual.Should().Be(expected);
 			}
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
-		public void FindIndexShouldNotAnythingWhenRangeExcludesItem(string testCase, IEnumerable<long> testData, int itemsCount, in long[] itemIndexes)
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexWithRangeVariants), MemberType = typeof(RecyclableLongListTestData))]
+		public void FindIndexShouldNotAnythingWhenRangeExcludesItem(string testCase, IEnumerable<long> testData, int itemsCount, int minBlockSize, in (long ItemIndex, long RangedItemsCount)[] itemRanges)
 		{
 			// Prepare
 			using var list = new RecyclableLongList<long>(testData, initialCapacity: itemsCount);
 			var expectedData = testData.ToList();
 
-			foreach (var itemIndex in itemIndexes)
+			foreach (var (itemIndex, rangedItemsCount) in itemRanges)
 			{
-				var expectedItem = expectedData[(int)itemIndex];
-				var expected = expectedData.FindIndex((int)itemIndex + 1, (int)(itemsCount - itemIndex - 1), item => item == expectedItem);
+				TestWith(itemsCount, list, expectedData, itemIndex, rangedItemsCount, expectedData[Math.Max((int)(itemIndex - 1), 0)]);
+				TestWith(itemsCount, list, expectedData, itemIndex, rangedItemsCount, expectedData[Math.Min((int)(itemIndex + rangedItemsCount), itemsCount - 1)]);
+			}
+
+			static void TestWith(int itemsCount, RecyclableLongList<long> list, List<long> expectedData, long itemIndex, long rangedItemsCount, long expectedItem)
+			{
+				var expected = expectedData.FindIndex((int)itemIndex, (int)rangedItemsCount, item => item == expectedItem);
 
 				// Act
-				var actual = list.FindIndex((int)itemIndex + 1, (int)(itemsCount - itemIndex - 1), item => item == expectedItem);
+				var actual = list.FindIndex((int)itemIndex, (int)rangedItemsCount, item => item == expectedItem);
 
 				// Validate
-				_ = actual.Should().Be(-1).And.Be(expected);
+				_ = actual.Should().Be(expected);
 			}
 		}
 
@@ -541,18 +562,22 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
-		public void FindLastIndexShouldReturnCorrectIndexesWhenConstrainedCount(string testCase, IEnumerable<long> testData, int itemsCount, in long[] itemIndexes)
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexWithRangeVariants), MemberType = typeof(RecyclableLongListTestData))]
+		public void FindLastIndexShouldReturnCorrectIndexesWhenConstrainedCount(string testCase, IEnumerable<long> testData, int itemsCount, int minBlockSize, in (long ItemIndex, long RangedItemsCount)[] itemRanges)
 		{
 			// Prepare
 			using var list = new RecyclableLongList<long>(testData, initialCapacity: itemsCount);
 			var expectedData = testData.ToList();
 
-			foreach (var itemIndex in itemIndexes)
+			foreach (var (itemIndex, rangedItemsCount) in itemRanges)
 			{
-				var expectedItem = expectedData[(int)itemIndex];
-
 				// Act & Validate
+				TestWith(itemsCount, list, expectedData, itemIndex, expectedData[(int)itemIndex]);
+				TestWith(itemsCount, list, expectedData, itemIndex, expectedData[Math.Min((int)(itemIndex + rangedItemsCount), itemsCount - 1)]);
+			}
+
+			static void TestWith(int itemsCount, RecyclableLongList<long> list, List<long> expectedData, long itemIndex, long expectedItem)
+			{
 				var expected = expectedData.FindLastIndex(itemsCount - 1, itemsCount, x => x == expectedItem);
 				_ = list.FindLastIndex(itemsCount - 1, itemsCount, x => x == expectedItem).Should().Be((int)itemIndex).And.Be(expected);
 			}

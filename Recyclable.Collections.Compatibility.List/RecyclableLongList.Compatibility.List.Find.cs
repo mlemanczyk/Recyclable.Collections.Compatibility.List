@@ -305,7 +305,7 @@ namespace Recyclable.Collections
 
 		public static int FindIndex<T>(this RecyclableLongList<T> list, int startIndex, int count, Predicate<T> match)
 		{
-			if (list._longCount == 0)
+			if (list._longCount == 0 || count == 0)
 			{
 				return RecyclableDefaults.ItemNotFoundIndex;
 			}
