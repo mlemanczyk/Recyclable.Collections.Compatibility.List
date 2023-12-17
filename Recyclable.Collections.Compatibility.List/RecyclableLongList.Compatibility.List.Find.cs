@@ -495,84 +495,158 @@ namespace Recyclable.Collections
 
 		public static int FindLastIndex<T>(this RecyclableLongList<T> list, int startIndex, int count, Predicate<T> match)
 		{
-			//if (count == 0)
-			//{
-			//	if (startIndex != -1)
-			//	{
-			//		ThrowHelper.ThrowArgumentOutOfRangeException_Index();
-			//	}
-			//}
-			//else  if (count < 0 || startIndex - count + 1 < 0)
-			//{
-			//	ThrowHelper.ThrowArgumentOutOfRangeException_Count();
-			//}
+			if (count == 0)
+			{
+				if (startIndex != -1)
+				{
+					ThrowHelper.ThrowArgumentOutOfRangeException_Index();
+				}
 
-			//if (startIndex < 0)
-			//{
-			//	return RecyclableDefaults.ItemNotFoundIndex;
-			//}
+				return RecyclableDefaults.ItemNotFoundIndex;
+			}
+			
+			if (count < 0 || startIndex - count + 1 < 0)
+			{
+				ThrowHelper.ThrowArgumentOutOfRangeException_Count();
+			}
 
-			//int sourceItemsCount = count; // startIndex - count + 1 >= 0 ? count : startIndex + 1;
-			//if (sourceItemsCount == 0)
-			//{
-			//	return RecyclableDefaults.ItemNotFoundIndex;
-			//}
+			if (startIndex < 0)
+			{
+				return RecyclableDefaults.ItemNotFoundIndex;
+			}
 
-			//int lastItemIndex = startIndex - sourceItemsCount;
-			//ReadOnlySpan<T> sourceSpan = list._memoryBlock;
-			//for (var itemIndex = startIndex; itemIndex > lastItemIndex; itemIndex--)
-			//{
-			//	if (match(sourceSpan[itemIndex]))
-			//	{
-			//		return itemIndex;
-			//	}
-			//}
+			int blockSizeMinus1 = list._blockSizeMinus1,
+				firstBlockIndex = startIndex >> list._blockSizePow2BitShift,
+				firstItemIndex = startIndex & blockSizeMinus1,
+				blockIndex = (startIndex + count) >> list._blockSizePow2BitShift,
+				itemIndex;
 
-			//return RecyclableDefaults.ItemNotFoundIndex;
+			ReadOnlySpan<T[]> memoryBlocksSpan = new(list._memoryBlocks);
+			ReadOnlySpan<T> sourceSpan = memoryBlocksSpan[blockIndex];
+			for (itemIndex = ((startIndex + count) & blockSizeMinus1) - 1; itemIndex >= 0; itemIndex--)
+			{
+				if (match(sourceSpan[itemIndex]))
+				{
+					return itemIndex;
+				}
+			}
 
-			throw new NotImplementedException();
+			while(blockIndex > firstBlockIndex)
+			{
+				sourceSpan = memoryBlocksSpan[blockIndex];
+				for (itemIndex = blockSizeMinus1; itemIndex >= 0; itemIndex--)
+				{
+					if (match(sourceSpan[itemIndex]))
+					{
+						return itemIndex;
+					}
+				}
+
+				blockIndex--;
+			}
+
+			sourceSpan = memoryBlocksSpan[blockIndex];
+			for (itemIndex = blockSizeMinus1; itemIndex >= firstItemIndex; itemIndex--)
+			{
+				if (match(sourceSpan[itemIndex]))
+				{
+					return itemIndex;
+				}
+			}
+
+			return RecyclableDefaults.ItemNotFoundIndex;
 		}
 
 		public static int FindLastIndex<T>(this RecyclableLongList<T> list, int startIndex, Predicate<T> match)
 		{
-			//if (list._count == 0 || startIndex < 0)
-			//{
-			//	return RecyclableDefaults.ItemNotFoundIndex;
-			//}
+			if (list._longCount == 0)
+			{
+				if (startIndex != -1)
+				{
+					ThrowHelper.ThrowArgumentOutOfRangeException_Index();
+				}
 
-			//ReadOnlySpan<T> sourceSpan = list._memoryBlock;
-			//for (var itemIndex = startIndex; itemIndex >= 0; itemIndex--)
-			//{
-			//	if (match(sourceSpan[itemIndex]))
-			//	{
-			//		return itemIndex;
-			//	}
-			//}
+				return RecyclableDefaults.ItemNotFoundIndex;
+			}
+			
+			if (startIndex < 0)
+			{
+				return RecyclableDefaults.ItemNotFoundIndex;
+			}
 
-			//return RecyclableDefaults.ItemNotFoundIndex;
+			int blockSizeMinus1 = list._blockSizeMinus1,
+				firstBlockIndex = startIndex >> list._blockSizePow2BitShift,
+				firstItemIndex = startIndex & blockSizeMinus1,
+				blockIndex = (int)(list._longCount >> list._blockSizePow2BitShift),
+				itemIndex;
 
-			throw new NotImplementedException();
+			ReadOnlySpan<T[]> memoryBlocksSpan = new(list._memoryBlocks);
+			ReadOnlySpan<T> sourceSpan = memoryBlocksSpan[blockIndex];
+			for (itemIndex = list._nextItemIndex > 0 ? list._nextItemIndex - 1 : blockSizeMinus1; itemIndex >= 0; itemIndex--)
+			{
+				if (match(sourceSpan[itemIndex]))
+				{
+					return itemIndex;
+				}
+			}
+
+			for (; blockIndex > firstBlockIndex; blockIndex--)
+			{
+				sourceSpan = memoryBlocksSpan[blockIndex];
+				for (itemIndex = blockSizeMinus1; itemIndex >= 0; itemIndex--)
+				{
+					if (match(sourceSpan[itemIndex]))
+					{
+						return itemIndex;
+					}
+				}
+			}
+
+			sourceSpan = memoryBlocksSpan[blockIndex];
+			for (itemIndex = blockSizeMinus1; itemIndex >= firstItemIndex; itemIndex--)
+			{
+				if (match(sourceSpan[itemIndex]))
+				{
+					return itemIndex;
+				}
+			}
+
+			return RecyclableDefaults.ItemNotFoundIndex;
 		}
 
 		public static int FindLastIndex<T>(this RecyclableLongList<T> list, Predicate<T> match)
 		{
-			//if (list._count == 0)
-			//{
-			//	return RecyclableDefaults.ItemNotFoundIndex;
-			//}
+			if (list._longCount == 0)
+			{
+				return RecyclableDefaults.ItemNotFoundIndex;
+			}
 
-			//ReadOnlySpan<T> sourceSpan = list._memoryBlock;
-			//for (var itemIndex = list._count - 1; itemIndex >= 0; itemIndex--)
-			//{
-			//	if (match(sourceSpan[itemIndex]))
-			//	{
-			//		return itemIndex;
-			//	}
-			//}
+			int blockSizeMinus1 = list._blockSizeMinus1;
+			ReadOnlySpan<T[]> memoryBlocksSpan = new(list._memoryBlocks);
 
-			//return RecyclableDefaults.ItemNotFoundIndex;
+			ReadOnlySpan<T> sourceSpan = memoryBlocksSpan[list._lastBlockWithData];
+			int itemIndex;
+			for (itemIndex = list._nextItemIndex == 0 ? blockSizeMinus1 : list._nextItemIndex - 1; itemIndex >= 0; itemIndex--)
+			{
+				if (match(sourceSpan[itemIndex]))
+				{
+					return itemIndex;
+				}
+			}
 
-			throw new NotImplementedException();
+			for (var blockIndex = list._lastBlockWithData - 1; blockIndex >= 0; blockIndex--)
+			{
+				sourceSpan = memoryBlocksSpan[blockIndex];
+				for (itemIndex = blockSizeMinus1; itemIndex >= 0; itemIndex--)
+				{
+					if (match(sourceSpan[itemIndex]))
+					{
+						return itemIndex;
+					}
+				}
+			}
+
+			return RecyclableDefaults.ItemNotFoundIndex;
 		}
 	}
 }

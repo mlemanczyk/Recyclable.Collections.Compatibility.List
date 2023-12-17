@@ -445,6 +445,32 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexWithRangeVariants), MemberType = typeof(RecyclableLongListTestData))]
+		public void FindIndexShouldNotAnythingWhenRangeExcludesItem(string testCase, IEnumerable<long> testData, int itemsCount, int minBlockSize, in (long ItemIndex, long RangedItemsCount)[] itemRanges)
+		{
+			// Prepare
+			using var list = new RecyclableLongList<long>(testData, initialCapacity: itemsCount);
+			var expectedData = testData.ToList();
+
+			foreach (var (itemIndex, rangedItemsCount) in itemRanges)
+			{
+				TestWith(itemsCount, list, expectedData, itemIndex, rangedItemsCount, expectedData[Math.Max((int)(itemIndex - 1), 0)]);
+				TestWith(itemsCount, list, expectedData, itemIndex, rangedItemsCount, expectedData[Math.Min((int)(itemIndex + rangedItemsCount), itemsCount - 1)]);
+			}
+
+			static void TestWith(int itemsCount, RecyclableLongList<long> list, List<long> expectedData, long itemIndex, long rangedItemsCount, long expectedItem)
+			{
+				var expected = expectedData.FindIndex((int)itemIndex, (int)rangedItemsCount, item => item == expectedItem);
+
+				// Act
+				var actual = list.FindIndex((int)itemIndex, (int)rangedItemsCount, item => item == expectedItem);
+
+				// Validate
+				_ = actual.Should().Be(expected);
+			}
+		}
+
+		[Theory]
 		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
 		public void FindIndexShouldReturnCorrectIndexes(string testCase, IEnumerable<long> testData, int itemsCount, in long[] itemIndexes)
 		{
@@ -479,32 +505,6 @@ namespace Recyclable.CollectionsTests
 				TestWith(itemsCount, list, expectedData, itemIndex, rangedItemsCount, expectedData[(int)itemIndex]);
 				TestWith(itemsCount, list, expectedData, itemIndex, rangedItemsCount, expectedData[Math.Min((int)(itemIndex + rangedItemsCount), itemsCount - 1)]);
 				TestWith(itemsCount, list, expectedData, itemIndex, rangedItemsCount, expectedData[(int)(itemIndex + (rangedItemsCount >> 1))]);
-			}
-
-			static void TestWith(int itemsCount, RecyclableLongList<long> list, List<long> expectedData, long itemIndex, long rangedItemsCount, long expectedItem)
-			{
-				var expected = expectedData.FindIndex((int)itemIndex, (int)rangedItemsCount, item => item == expectedItem);
-
-				// Act
-				var actual = list.FindIndex((int)itemIndex, (int)rangedItemsCount, item => item == expectedItem);
-
-				// Validate
-				_ = actual.Should().Be(expected);
-			}
-		}
-
-		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexWithRangeVariants), MemberType = typeof(RecyclableLongListTestData))]
-		public void FindIndexShouldNotAnythingWhenRangeExcludesItem(string testCase, IEnumerable<long> testData, int itemsCount, int minBlockSize, in (long ItemIndex, long RangedItemsCount)[] itemRanges)
-		{
-			// Prepare
-			using var list = new RecyclableLongList<long>(testData, initialCapacity: itemsCount);
-			var expectedData = testData.ToList();
-
-			foreach (var (itemIndex, rangedItemsCount) in itemRanges)
-			{
-				TestWith(itemsCount, list, expectedData, itemIndex, rangedItemsCount, expectedData[Math.Max((int)(itemIndex - 1), 0)]);
-				TestWith(itemsCount, list, expectedData, itemIndex, rangedItemsCount, expectedData[Math.Min((int)(itemIndex + rangedItemsCount), itemsCount - 1)]);
 			}
 
 			static void TestWith(int itemsCount, RecyclableLongList<long> list, List<long> expectedData, long itemIndex, long rangedItemsCount, long expectedItem)
@@ -579,7 +579,7 @@ namespace Recyclable.CollectionsTests
 			static void TestWith(int itemsCount, RecyclableLongList<long> list, List<long> expectedData, long itemIndex, long expectedItem)
 			{
 				var expected = expectedData.FindLastIndex(itemsCount - 1, itemsCount, x => x == expectedItem);
-				_ = list.FindLastIndex(itemsCount - 1, itemsCount, x => x == expectedItem).Should().Be((int)itemIndex).And.Be(expected);
+				_ = list.FindLastIndex(itemsCount - 1, itemsCount, x => x == expectedItem).Should().Be(expected);
 			}
 		}
 
