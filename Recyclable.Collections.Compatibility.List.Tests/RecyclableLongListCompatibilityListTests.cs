@@ -734,8 +734,8 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
-		public void GetRangeShouldReturnCorrectItems(string testCase, IEnumerable<long> testData, int itemsCount, in long[] itemIndexes)
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexWithRangeVariants), MemberType = typeof(RecyclableLongListTestData))]
+		public void GetRangeShouldReturnCorrectItems(string testCase, IEnumerable<long> testData, int itemsCount, int minBlockSize, in (long ItemIndex, long RangedItemsCount)[] itemRanges)
 		{
 			_ = testData.Any().Should().BeTrue("we need items on the list that we can look for");
 
@@ -743,57 +743,16 @@ namespace Recyclable.CollectionsTests
 			using var list = new RecyclableLongList<long>(testData, initialCapacity: itemsCount);
 			var expectedData = testData.ToList();
 
-			foreach (var itemIndex in itemIndexes)
+			foreach (var (itemIndex, rangedItemsCount) in itemRanges)
 			{
-				int startingIndex = (int)Math.Min(1, itemIndex);
-				var expectedRangeItems = expectedData.GetRange(startingIndex, (int)itemIndex);
+				var expectedRangeItems = expectedData.GetRange((int)itemIndex, (int)rangedItemsCount);
 
 				// Act
-				using var rangeItems = list.GetRange(startingIndex, (int)itemIndex);
+				using var rangeItems = list.GetRange((int)itemIndex, (int)rangedItemsCount);
 
 				// Validate
 				_ = rangeItems.Count.Should().Be(expectedRangeItems.Count);
 				_ = rangeItems.Should().Equal(expectedRangeItems);
-			}
-		}
-
-		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
-		public void IndexOfShouldReturnCorrectIndexesWhenConstrainedCount(string testCase, IEnumerable<long> testData, int itemsCount, in long[] itemIndexes)
-		{
-			// Prepare
-			using var list = new RecyclableLongList<long>(testData, initialCapacity: itemsCount);
-			var expectedData = testData.ToList();
-
-			foreach (var itemIndex in itemIndexes)
-			{
-				var expected = expectedData.IndexOf(expectedData[(int)itemIndex], (int)itemIndex, (int)(itemsCount - itemIndex));
-
-				// Act
-				var actual = list.IndexOf(expectedData[(int)itemIndex], (int)itemIndex, (int)(itemsCount - itemIndex));
-
-				// Validate
-				_ = actual.Should().Be((int)itemIndex).And.Be(expected);
-			}
-		}
-
-		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
-		public void IndexOfShouldReturnCorrectIndexesWhenConstrainedIndex(string testCase, IEnumerable<long> testData, int itemsCount, in long[] itemIndexes)
-		{
-			// Prepare
-			using var list = new RecyclableLongList<long>(testData, initialCapacity: itemsCount);
-			var expectedData = testData.ToList();
-
-			foreach (var itemIndex in itemIndexes)
-			{
-				var expected = expectedData.IndexOf(expectedData[(int)itemIndex], (int)itemIndex);
-
-				// Act
-				var actual = list.IndexOf(expectedData[(int)itemIndex], (int)itemIndex);
-
-				// Validate
-				_ = actual.Should().Be((int)itemIndex).And.Be(expected);
 			}
 		}
 
