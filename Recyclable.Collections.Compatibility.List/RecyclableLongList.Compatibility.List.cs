@@ -395,7 +395,7 @@ namespace Recyclable.Collections
 			RecyclableLongList<T> result = new(minBlockSize: blockSize, initialCapacity: count);
 			ReadOnlySpan<T[]> sourceMemoryBlocksSpan = new (list._memoryBlocks),
 							  targetMemoryBlocksSpan = new (result._memoryBlocks);
-			ReadOnlySpan<T> sourceMemoryBlockSpan = sourceMemoryBlocksSpan[0];
+			ReadOnlySpan<T> sourceMemoryBlockSpan = sourceMemoryBlocksSpan[blockIndex];
 			Span<T> targetMemoryBlockSpan = new(targetMemoryBlocksSpan[0]);
 			while (blockIndex < lastBlockWithData)
 			{
@@ -439,6 +439,11 @@ namespace Recyclable.Collections
 				while (itemIndex < lastBlockWithData)
 				{
 					targetMemoryBlockSpan[targetItemIndex] = sourceMemoryBlockSpan[itemIndex];
+					if (itemIndex + 1 == lastBlockWithData)
+					{
+						break;
+					}
+
 					itemIndex++;
 					if (targetItemIndex + 1 == blockSize)
 					{
@@ -456,9 +461,9 @@ namespace Recyclable.Collections
 				}
 			}
 
-			result._lastBlockWithData = lastBlockWithData;
-			result._longCount = count;
 			result._nextItemIndex = count & list._blockSizeMinus1;
+			result._lastBlockWithData = result._nextItemIndex > 0 ? targetBlockIndex : targetBlockIndex - 1;
+			result._longCount = count;
 			result._nextItemBlockIndex = targetBlockIndex;
 			return result;
 		}
