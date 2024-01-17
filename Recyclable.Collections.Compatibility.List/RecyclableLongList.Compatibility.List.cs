@@ -334,43 +334,133 @@ namespace Recyclable.Collections
 			
 		public static void ForEach<T>(this RecyclableLongList<T> list, Action<T> action)
 		{
-			//int sourceItemsCount = list._count;
-			//if (sourceItemsCount == 0)
-			//{
-			//	return;
-			//}
+			if (list._longCount == 0)
+			{
+				return;
+			}
 
-			//ReadOnlySpan<T> sourceSpan = list._memoryBlock;
-			//for (var itemIndex = 0; itemIndex < sourceItemsCount; itemIndex++)
-			//{
-			//	action(sourceSpan[itemIndex]);
-			//}
+			int blockIndex = 0,
+				blockSize = list._blockSize,
+				itemIndex = 0,
+				lastBlockWithData = list._lastBlockWithData;
 
-			throw new NotImplementedException();
+			ReadOnlySpan<T[]> sourceMemoryBlocksSpan = list._memoryBlocks;
+			ReadOnlySpan<T> sourceMemoryBlockSpan = sourceMemoryBlocksSpan[0];
+			while (blockIndex < lastBlockWithData)
+			{
+				action(sourceMemoryBlockSpan[itemIndex]);
+				if (itemIndex + 1 == blockSize)
+				{
+					itemIndex = 0;
+					blockIndex++;
+					sourceMemoryBlockSpan = sourceMemoryBlocksSpan[blockIndex];
+
+					if (blockIndex == lastBlockWithData)
+					{
+						break;
+					}
+				}
+				else
+				{
+					itemIndex++;
+				}
+			}
+
+			if (blockIndex == lastBlockWithData)
+			{
+				// We're re-using another variable for better performance
+				lastBlockWithData = list._nextItemIndex > 0 ? list._nextItemIndex : blockSize;
+				while (itemIndex < lastBlockWithData)
+				{
+					action(sourceMemoryBlockSpan[itemIndex++]);
+				}
+			}
 		}
 
-		public static RecyclableList<T> GetRange<T>(this RecyclableLongList<T> list, int index, int count)
+		public static RecyclableLongList<T> GetRange<T>(this RecyclableLongList<T> list, int startIndex, int count)
 		{
-			//int sourceItemsCount = index + count <= list._count ? count : list._count - index;
-			//if (sourceItemsCount <= 0)
-			//{
-			//	return new();
-			//}
+			if (list._longCount == 0 || count == 0)
+			{
+				return new();
+			}
 
-			//ReadOnlySpan<T> sourceSpan = list._memoryBlock;
-			//RecyclableList<T> result = new(sourceItemsCount);
-			//Span<T> targetSpan = result._memoryBlock;
-			//int resultItemsCount = 0;
-			//sourceItemsCount += index;
-			//for (var itemIndex = index; itemIndex < sourceItemsCount; itemIndex++)
-			//{
-			//	targetSpan[resultItemsCount++] = sourceSpan[itemIndex];
-			//}
+			int itemIndex = startIndex & list._blockSizeMinus1,
+				blockIndex = startIndex >> list._blockSizePow2BitShift,
+				blockSize = list._blockSize,
+				lastItemIndex = (startIndex + count) & list._blockSizeMinus1,
+				lastBlockWithData = (startIndex + count) >> list._blockSizePow2BitShift,
+				targetBlockIndex = 0,
+				targetItemIndex = 0;
 
-			//result._count = resultItemsCount;
-			//return result;
+			RecyclableLongList<T> result = new(minBlockSize: blockSize, initialCapacity: count);
+			ReadOnlySpan<T[]> sourceMemoryBlocksSpan = new (list._memoryBlocks),
+							  targetMemoryBlocksSpan = new (result._memoryBlocks);
+			ReadOnlySpan<T> sourceMemoryBlockSpan = sourceMemoryBlocksSpan[0];
+			Span<T> targetMemoryBlockSpan = new(targetMemoryBlocksSpan[0]);
+			while (blockIndex < lastBlockWithData)
+			{
+				targetMemoryBlockSpan[targetItemIndex] = sourceMemoryBlockSpan[itemIndex];
 
-			throw new NotImplementedException();
+				if (targetItemIndex + 1 == blockSize)
+				{
+					targetItemIndex = 0;
+					targetBlockIndex++;
+					if (targetBlockIndex <= lastBlockWithData)
+					{
+						targetMemoryBlockSpan = new(targetMemoryBlocksSpan[targetBlockIndex]);
+					}
+				}
+				else
+				{
+					targetItemIndex++;
+				}
+
+				if (itemIndex + 1 == blockSize)
+				{
+					itemIndex = 0;
+					blockIndex++;
+					sourceMemoryBlockSpan = sourceMemoryBlocksSpan[blockIndex];
+
+					if (blockIndex == lastBlockWithData)
+					{
+						break;
+					}
+				}
+				else
+				{
+					itemIndex++;
+				}
+			}
+
+			if (blockIndex == lastBlockWithData)
+			{
+				// We're re-using another variable for better performance
+				lastBlockWithData = lastItemIndex > 0 ? lastItemIndex : blockSize;
+				while (itemIndex < lastBlockWithData)
+				{
+					targetMemoryBlockSpan[targetItemIndex] = sourceMemoryBlockSpan[itemIndex];
+					itemIndex++;
+					if (targetItemIndex + 1 == blockSize)
+					{
+						targetItemIndex = 0;
+						targetBlockIndex++;
+						if (targetBlockIndex <= lastBlockWithData)
+						{
+							targetMemoryBlockSpan = new(targetMemoryBlocksSpan[targetBlockIndex]);
+						}
+					}
+					else
+					{
+						targetItemIndex++;
+					}
+				}
+			}
+
+			result._lastBlockWithData = lastBlockWithData;
+			result._longCount = count;
+			result._nextItemIndex = count & list._blockSizeMinus1;
+			result._nextItemBlockIndex = targetBlockIndex;
+			return result;
 		}
 
 		public static int RemoveAll<T>(this RecyclableLongList<T> list, Predicate<T> match)

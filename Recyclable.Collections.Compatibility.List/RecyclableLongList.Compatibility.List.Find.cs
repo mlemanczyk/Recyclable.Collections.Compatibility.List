@@ -63,24 +63,58 @@ namespace Recyclable.Collections
 
 		public static T? Find<T>(this RecyclableLongList<T> list, Predicate<T> match)
 		{
-			//int sourceItemsCount = list._count;
-			//if (sourceItemsCount == 0)
-			//{
-			//	return default;
-			//}
+			if (list._longCount == 0)
+			{
+				return default;
+			}
 
-			//ReadOnlySpan<T> sourceSpan = list._memoryBlock;
-			//for (var itemIndex = 0; itemIndex < sourceItemsCount; itemIndex++)
-			//{
-			//	if (match(sourceSpan[itemIndex]))
-			//	{
-			//		return sourceSpan[itemIndex];
-			//	}
-			//}
+			int blockIndex = 0,
+				blockSize = list._blockSize,
+				itemIndex = 0,
+				lastBlockWithData = list._lastBlockWithData;
 
-			//return default;
+			ReadOnlySpan<T[]> sourceMemoryBlocksSpan = list._memoryBlocks;
+			ReadOnlySpan<T> sourceMemoryBlockSpan = sourceMemoryBlocksSpan[0];
+			while (blockIndex < lastBlockWithData)
+			{
+				if (match(sourceMemoryBlockSpan[itemIndex]))
+				{
+					return sourceMemoryBlockSpan[itemIndex];
+				}
 
-			throw new NotImplementedException();
+				if (itemIndex + 1 == blockSize)
+				{
+					itemIndex = 0;
+					blockIndex++;
+					sourceMemoryBlockSpan = sourceMemoryBlocksSpan[blockIndex];
+
+					if (blockIndex == lastBlockWithData)
+					{
+						break;
+					}
+				}
+				else
+				{
+					itemIndex++;
+				}
+			}
+
+			if (blockIndex == lastBlockWithData)
+			{
+				// We're re-using another variable for better performance
+				lastBlockWithData = list._nextItemIndex > 0 ? list._nextItemIndex : blockSize;
+				while (itemIndex < lastBlockWithData)
+				{
+					if (match(sourceMemoryBlockSpan[itemIndex]))
+					{
+						return sourceMemoryBlockSpan[itemIndex];
+					}
+
+					itemIndex++;
+				}
+			}
+
+			return default;
 		}
 
 		public static RecyclableLongList<T> FindAll<T>(this RecyclableLongList<T> list, Predicate<T> match)
@@ -317,7 +351,7 @@ namespace Recyclable.Collections
 				lastBlockWithData = (startIndex + count) >> list._blockSizePow2BitShift;
 
 			ReadOnlySpan<T[]> sourceMemoryBlocksSpan = list._memoryBlocks;
-			ReadOnlySpan<T> sourceMemoryBlockSpan = sourceMemoryBlocksSpan[0];
+			ReadOnlySpan<T> sourceMemoryBlockSpan = sourceMemoryBlocksSpan[blockIndex];
 			while (blockIndex < lastBlockWithData)
 			{
 				if (match(sourceMemoryBlockSpan[itemIndex]))
@@ -374,7 +408,7 @@ namespace Recyclable.Collections
 				lastBlockWithData = list._lastBlockWithData;
 
 			ReadOnlySpan<T[]> sourceMemoryBlocksSpan = list._memoryBlocks;
-			ReadOnlySpan<T> sourceMemoryBlockSpan = sourceMemoryBlocksSpan[0];
+			ReadOnlySpan<T> sourceMemoryBlockSpan = sourceMemoryBlocksSpan[blockIndex];
 			while (blockIndex < lastBlockWithData)
 			{
 				if (match(sourceMemoryBlockSpan[itemIndex]))
@@ -474,23 +508,37 @@ namespace Recyclable.Collections
 
 		public static T? FindLast<T>(this RecyclableLongList<T> list, Predicate<T> match)
 		{
-			//if (list._count == 0)
-			//{
-			//	return default;
-			//}
+			if (list._longCount == 0)
+			{
+				return default;
+			}
 
-			//ReadOnlySpan<T> sourceSpan = list._memoryBlock;
-			//for (var itemIndex = list._count - 1; itemIndex >= 0; itemIndex--)
-			//{
-			//	if (match(sourceSpan[itemIndex]))
-			//	{
-			//		return sourceSpan[itemIndex];
-			//	}
-			//}
+			int blockSizeMinus1 = list._blockSizeMinus1,
+				itemIndex;
 
-			//return default;
+			ReadOnlySpan<T[]> memoryBlocksSpan = new(list._memoryBlocks);
+			ReadOnlySpan<T> sourceSpan = memoryBlocksSpan[list._lastBlockWithData];
+			for (itemIndex = list._nextItemIndex == 0 ? blockSizeMinus1 : list._nextItemIndex - 1; itemIndex >= 0; itemIndex--)
+			{
+				if (match(sourceSpan[itemIndex]))
+				{
+					return sourceSpan[itemIndex];
+				}
+			}
 
-			throw new NotImplementedException();
+			for (var blockIndex = list._lastBlockWithData - 1; blockIndex >= 0; blockIndex--)
+			{
+				sourceSpan = memoryBlocksSpan[blockIndex];
+				for (itemIndex = blockSizeMinus1; itemIndex >= 0; itemIndex--)
+				{
+					if (match(sourceSpan[itemIndex]))
+					{
+						return sourceSpan[itemIndex];
+					}
+				}
+			}
+
+			return default;
 		}
 
 		public static int FindLastIndex<T>(this RecyclableLongList<T> list, int startIndex, int count, Predicate<T> match)
