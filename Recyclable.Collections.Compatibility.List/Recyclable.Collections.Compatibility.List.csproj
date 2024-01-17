@@ -18,7 +18,7 @@
 		<PackageLicenseFile>LICENSE.md</PackageLicenseFile>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<RepositoryType>git</RepositoryType>
-		<PackageReleaseNotes>RecyclableLongList.Compatibility.List.Find(), .FindLast(), .ForEach() &amp; .GetRange() implemented. Bug fixes.</PackageReleaseNotes>
+		<PackageReleaseNotes>Several RecyclableLongList.Compatibility.List methods initially implemented. Bug fixes.</PackageReleaseNotes>
 		<Platforms>AnyCPU;x64</Platforms>
 		<PackageIcon>logo.png</PackageIcon>
 	</PropertyGroup>
