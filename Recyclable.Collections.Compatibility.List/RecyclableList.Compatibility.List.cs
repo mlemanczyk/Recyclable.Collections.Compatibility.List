@@ -6,6 +6,8 @@ using System.Runtime.CompilerServices;
 using Recyclable.Collections.Compatibility.List.Properties;
 using Recyclable.Collections.Pools;
 
+[assembly: InternalsVisibleTo("Recyclable.Collections.Compatibility.List.Tests")]
+
 namespace Recyclable.Collections
 {
 

@@ -90,7 +90,7 @@ namespace Recyclable.Collections
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
-		public static void InsertRange<T>(this RecyclableLongList<T> list, int index, in Array items)
+		internal static void InsertRange<T>(this RecyclableLongList<T> list, int index, in Array items)
 		{
 			//if (list._capacity < list._count + items.Length)
 			//{
@@ -108,7 +108,7 @@ namespace Recyclable.Collections
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
-		public static void InsertRange<T>(this RecyclableLongList<T> list, int index, in T[] items)
+		internal static void InsertRange<T>(this RecyclableLongList<T> list, int index, in T[] items)
 		{
 			//if (list._capacity < list._count + items.Length)
 			//{
@@ -126,7 +126,7 @@ namespace Recyclable.Collections
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
-		public static void InsertRange<T>(this RecyclableLongList<T> list, int index, ReadOnlySpan<T> items)
+		internal static void InsertRange<T>(this RecyclableLongList<T> list, int index, ReadOnlySpan<T> items)
 		{
 			//if (list._capacity < list._count + items.Length)
 			//{
@@ -144,7 +144,7 @@ namespace Recyclable.Collections
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
-		public static void InsertRange<T>(this RecyclableLongList<T> list, int index, Span<T> items)
+		internal static void InsertRange<T>(this RecyclableLongList<T> list, int index, Span<T> items)
 		{
 			//if (list._capacity < list._count + items.Length)
 			//{
@@ -162,7 +162,7 @@ namespace Recyclable.Collections
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
-		public static void InsertRange<T>(this RecyclableLongList<T> list, int index, List<T> items)
+		internal static void InsertRange<T>(this RecyclableLongList<T> list, int index, List<T> items)
 		{
 			//if (list._capacity < list._count + items.Count)
 			//{
@@ -180,7 +180,7 @@ namespace Recyclable.Collections
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
-		public static void InsertRange<T>(this RecyclableLongList<T> list, int index, ICollection items)
+		internal static void InsertRange<T>(this RecyclableLongList<T> list, int index, ICollection items)
 		{
 			//if (list._capacity < list._count + items.Count)
 			//{
@@ -198,7 +198,7 @@ namespace Recyclable.Collections
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
-		public static void InsertRange<T>(this RecyclableLongList<T> list, int index, ICollection<T> items)
+		internal static void InsertRange<T>(this RecyclableLongList<T> list, int index, ICollection<T> items)
 		{
 			//if (list._capacity < list._count + items.Count)
 			//{
@@ -216,7 +216,7 @@ namespace Recyclable.Collections
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
-		public static void InsertRange<T>(this RecyclableLongList<T> list, int index, RecyclableList<T> items)
+		internal static void InsertRange<T>(this RecyclableLongList<T> list, int index, RecyclableList<T> items)
 		{
 			//if (list._capacity < list._count + items._count)
 			//{
@@ -234,7 +234,7 @@ namespace Recyclable.Collections
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
-		public static void InsertRange<T>(this RecyclableLongList<T> list, int index, RecyclableLongList<T> items)
+		internal static void InsertRange<T>(this RecyclableLongList<T> list, int index, RecyclableLongList<T> items)
 		{
 			//if (items._longCount == 0)
 			//{
@@ -287,7 +287,7 @@ namespace Recyclable.Collections
 			throw new NotImplementedException();
 		}
 
-		public static void InsertRange<T>(this RecyclableLongList<T> list, int index, IEnumerable items, int growByCount = RecyclableDefaults.MinPooledArrayLength)
+		internal static void InsertRange<T>(this RecyclableLongList<T> list, int index, IEnumerable items, int growByCount = RecyclableDefaults.MinPooledArrayLength)
 		{
 			//var enumerator = items.GetEnumerator();
 			//if (!enumerator.MoveNext())
@@ -349,7 +349,7 @@ namespace Recyclable.Collections
 			throw new NotImplementedException();
 		}
 
-		public static void InsertRange<T>(this RecyclableLongList<T> list, int index, IReadOnlyList<T> items)
+		internal static void InsertRange<T>(this RecyclableLongList<T> list, int index, IReadOnlyList<T> items)
 		{
 			//int sourceItemsCount = items.Count;
 			//if (list._capacity < list._count + sourceItemsCount)
@@ -370,7 +370,7 @@ namespace Recyclable.Collections
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
-		public static void InsertRange<T>(this RecyclableLongList<T> list, int index, IEnumerable<T> items, int growByCount = RecyclableDefaults.MinPooledArrayLength)
+		internal static void InsertRange<T>(this RecyclableLongList<T> list, int index, IEnumerable<T> items, int growByCount = RecyclableDefaults.MinPooledArrayLength)
 		{
 			//if (items is RecyclableList<T> sourceRecyclableList)
 			//{

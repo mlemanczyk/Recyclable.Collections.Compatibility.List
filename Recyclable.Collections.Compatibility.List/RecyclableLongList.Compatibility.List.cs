@@ -463,7 +463,7 @@ namespace Recyclable.Collections
 			return result;
 		}
 
-		public static int RemoveAll<T>(this RecyclableLongList<T> list, Predicate<T> match)
+		internal static int RemoveAll<T>(this RecyclableLongList<T> list, Predicate<T> match)
 		{
 			//using var allIndexes = zzzRecyclableListCompatibilityListFind.FindAllIndexes(list, match);
 			//int foundItemsCount = allIndexes._count;
@@ -490,7 +490,7 @@ namespace Recyclable.Collections
 			throw new NotImplementedException();
 		}
 
-		public static void RemoveRange<T>(this RecyclableLongList<T> list, int index, int count)
+		internal static void RemoveRange<T>(this RecyclableLongList<T> list, int index, int count)
 		{
 			//int oldCount = list._count;
 			//count = count - index + 1 <= oldCount ? count : oldCount - index + 1;
@@ -516,7 +516,7 @@ namespace Recyclable.Collections
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-		public static void Reverse<T>(this RecyclableLongList<T> list)
+		internal static void Reverse<T>(this RecyclableLongList<T> list)
 		{
 			//Array.Reverse(list._memoryBlock, 0, list._count);
 			//list._version++;
@@ -525,7 +525,7 @@ namespace Recyclable.Collections
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-		public static void Reverse<T>(this RecyclableLongList<T> list, int index, int count)
+		internal static void Reverse<T>(this RecyclableLongList<T> list, int index, int count)
 		{
 			//Array.Reverse(list._memoryBlock, index, count);
 			//list._version++;
@@ -534,7 +534,7 @@ namespace Recyclable.Collections
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-		public static void Sort<T>(this RecyclableLongList<T> list)
+		internal static void Sort<T>(this RecyclableLongList<T> list)
 		{
 			//Array.Sort(list._memoryBlock, 0, list._count);
 			//list._version++;
@@ -543,7 +543,7 @@ namespace Recyclable.Collections
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-		public static void Sort<T>(this RecyclableLongList<T> list, Comparison<T> comparison)
+		internal static void Sort<T>(this RecyclableLongList<T> list, Comparison<T> comparison)
 		{
 			//Array.Sort(list._memoryBlock, 0, list._count, new ComparisonToComparerAdapter<T>(comparison));
 			//list._version++;
@@ -552,7 +552,7 @@ namespace Recyclable.Collections
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-		public static void Sort<T>(this RecyclableLongList<T> list, IComparer<T>? comparer)
+		internal static void Sort<T>(this RecyclableLongList<T> list, IComparer<T>? comparer)
 		{
 			//Array.Sort(list._memoryBlock, 0, list._count, comparer);
 			//list._version++;
@@ -561,7 +561,7 @@ namespace Recyclable.Collections
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-		public static void Sort<T>(this RecyclableLongList<T> list, int index, int count, IComparer<T>? comparer)
+		internal static void Sort<T>(this RecyclableLongList<T> list, int index, int count, IComparer<T>? comparer)
 		{
 			//Array.Sort(list._memoryBlock, index, count, comparer);
 			//list._version++;
@@ -570,7 +570,7 @@ namespace Recyclable.Collections
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-		public static T[] ToArray<T>(this RecyclableLongList<T> list)
+		internal static T[] ToArray<T>(this RecyclableLongList<T> list)
 		{
 			//T[] result = new T[list._count];
 			//new ReadOnlySpan<T>(list._memoryBlock, 0, list._count).CopyTo(result);
@@ -579,7 +579,7 @@ namespace Recyclable.Collections
 			throw new NotImplementedException();
 		}
 
-		public static void TrimExcess<T>(this RecyclableLongList<T> list)
+		internal static void TrimExcess<T>(this RecyclableLongList<T> list)
 		{
 			//var requiredCapacity = list._count >= RecyclableDefaults.InitialCapacity ? list._count : RecyclableDefaults.InitialCapacity;
 
@@ -601,7 +601,7 @@ namespace Recyclable.Collections
 			throw new NotImplementedException();
 		}
 
-		public static bool TrueForAll<T>(this RecyclableLongList<T> list, Predicate<T> match)
+		internal static bool TrueForAll<T>(this RecyclableLongList<T> list, Predicate<T> match)
 		{
 			//int sourceItemsCount = list._count;
 			//if (sourceItemsCount == 0)
