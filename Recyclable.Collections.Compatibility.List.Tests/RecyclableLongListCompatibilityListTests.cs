@@ -12,7 +12,7 @@ namespace Recyclable.CollectionsTests
 	public class RecyclableLongListCompatibilityListTests
 	{
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void BinarySearchShouldFindAllItems(string testCase, IEnumerable<long> testData, int itemsCount, int minBlockSize, in long[] itemIndexes)
 		{
 			_ = testData.Any().Should().BeTrue("we need items on the list that we can look for");
@@ -35,7 +35,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexWithRangeVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexWithRangeTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void BinarySearchShouldFindAllItemsWhenConstrainedRange(string testCase, IEnumerable<long> testData, int itemsCount, int minBlockSize, in (long ItemIndex, long RangedItemsCount)[] itemRanges)
 		{
 			_ = testData.Any().Should().BeTrue("we need items on the list that we can look for");
@@ -65,7 +65,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void BinarySearchShouldFindAllItemsWhenWithCustomComparer(string testCase, IEnumerable<long> testData, int itemsCount, int minBlockSize, in long[] itemIndexes)
 		{
 			_ = testData.Any().Should().BeTrue("we need items on the list that we can look for");
@@ -89,7 +89,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void BinarySearchShouldNotFindNonExistingItems(string testCase, IEnumerable<long> testData, int itemsCount, int minBlockSize, in long[] itemIndexes)
 		{
 			_ = testData.Any().Should().BeTrue("we need items on the list that we can look for");
@@ -115,7 +115,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexWithRangeVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexWithRangeTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void BinarySearchShouldNotFindNonExistingItemsWhenConstrainedRange(string testCase, IEnumerable<long> testData, int itemsCount, int minBlockSize, in (long ItemIndex, long RangedItemsCount)[] itemRanges)
 		{
 			_ = testData.Any().Should().BeTrue("we need items on the list that we can look for");
@@ -144,7 +144,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexWithRangeVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexWithRangeTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void BinarySearchShouldNotFindNonExistingItemsWhenOutsideRange(string testCase, IEnumerable<long> testData, int itemsCount, int minBlockSize, in (long ItemIndex, long RangedItemsCount)[] itemRanges)
 		{
 			_ = testData.Any().Should().BeTrue("we need items on the list that we can look for");
@@ -172,7 +172,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void BinarySearchShouldNotFindNonExistingItemsWhenWithCustomComparer(string testCase, IEnumerable<long> testData, int itemsCount, int minBlockSize, in long[] itemIndexes)
 		{
 			var comparer = Comparer<long>.Default;
@@ -199,7 +199,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void BinarySearchShouldThrowArgumentOutOfRangeWhenOutsideRange(string testCase, IEnumerable<long> testData, int itemsCount, int minBlockSize, in long[] itemIndexes)
 		{
 			_ = testData.Any().Should().BeTrue("we need items on the list that we can look for");
@@ -226,7 +226,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void ConvertAllShouldConvertAllItems(string testCase, IEnumerable<long> testData, int itemsCount, int minBlockSize, in long[] itemIndexes)
 		{
 			// Prepare
@@ -242,7 +242,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexWithRangeVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexWithRangeTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void CopyToShouldCopyAllItemsInTheCorrectOrderWhenConstrainedIndex(string testCase, IEnumerable<long> testData, int itemsCount, int minBlockSize, in (long ItemIndex, long RangedItemsCount)[] itemIndexRanges)
 		{
 			// Prepare
@@ -263,7 +263,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexWithRangeVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexWithRangeTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void CopyToShouldCopyAllItemsInTheCorrectOrderWhenConstrainedRange(string testCase, IEnumerable<long> testData, int itemsCount, int minBlockSize, in (long ItemIndex, long RangedItemsCount)[] itemIndexRanges)
 		{
 			// Prepare
@@ -284,7 +284,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void CopyToShouldCopyAllItemsInTheCorrectOrderWhenFromStart(string testCase, IEnumerable<long> testData, int itemsCount, int minBlockSize)
 		{
 			// Prepare
@@ -302,7 +302,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void CopyToShouldThrowArgumentOutOfRangeWhenOutsideRange(string testCase, IEnumerable<long> testData, int itemsCount, int minBlockSize, in long[] itemIndexes)
 		{
 			_ = testData.Any().Should().BeTrue("we need items on the list that we can look for");
@@ -332,7 +332,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void ExistsShouldFindAllItems(string testCase, IEnumerable<long> testData, int itemsCount, int minBlockSize, in long[] itemIndexes)
 		{
 			_ = testData.Any().Should().BeTrue("we need items on the list that we can look for");
@@ -355,7 +355,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void ExistsShouldNotFindNonExistingItems(string testCase, IEnumerable<long> testData, int itemsCount, in long[] itemIndexes)
 		{
 			_ = testData.Any().Should().BeTrue("we need items on the list that we can look for");
@@ -378,7 +378,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void FindAllIndexesShouldReturnCorrectIndexes(string testCase, IEnumerable<long> testData, int itemsCount, in long[] itemIndexes)
 		{
 			//* There is no equivalent of .FindAllIndexes in List<T>, so no comparison here.
@@ -445,7 +445,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexWithRangeVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexWithRangeTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void FindIndexShouldNotAnythingWhenRangeExcludesItem(string testCase, IEnumerable<long> testData, int itemsCount, int minBlockSize, in (long ItemIndex, long RangedItemsCount)[] itemRanges)
 		{
 			// Prepare
@@ -471,7 +471,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void FindIndexShouldReturnCorrectIndexes(string testCase, IEnumerable<long> testData, int itemsCount, in long[] itemIndexes)
 		{
 			// Prepare
@@ -493,7 +493,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexWithRangeVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexWithRangeTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void FindIndexShouldReturnCorrectIndexesWhenConstrainedCount(string testCase, IEnumerable<long> testData, int itemsCount, int minBlockSize, in (long ItemIndex, long RangedItemsCount)[] itemRanges)
 		{
 			// Prepare
@@ -520,7 +520,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void FindIndexShouldReturnCorrectIndexesWhenConstrainedIndex(string testCase, IEnumerable<long> testData, int itemsCount, in long[] itemIndexes)
 		{
 			// Prepare
@@ -541,7 +541,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void FindLastIndexShouldReturnCorrectIndexes(string testCase, IEnumerable<long> testData, int itemsCount, in long[] itemIndexes)
 		{
 			// Prepare
@@ -562,7 +562,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexWithRangeVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexWithRangeTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void FindLastIndexShouldReturnCorrectIndexesWhenConstrainedCount(string testCase, IEnumerable<long> testData, int itemsCount, int minBlockSize, in (long ItemIndex, long RangedItemsCount)[] itemRanges)
 		{
 			// Prepare
@@ -584,7 +584,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void FindLastIndexShouldReturnCorrectIndexesWhenConstrainedIndex(string testCase, IEnumerable<long> testData, int itemsCount, in long[] itemIndexes)
 		{
 			// Prepare
@@ -605,7 +605,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void FindLastIndexShouldThrowArgumentOutOfRange(string testCase, IEnumerable<long> testData, int itemsCount, in long[] itemIndexes)
 		{
 			// Prepare
@@ -632,7 +632,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void FindLastShouldReturnCorrectItem(string testCase, IEnumerable<long> testData, int itemsCount, in long[] itemIndexes)
 		{
 			// Prepare
@@ -653,7 +653,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void FindShouldFindAllItems(string testCase, IEnumerable<long> testData, int itemsCount, in long[] itemIndexes)
 		{
 			_ = testData.Any().Should().BeTrue("we need items on the list that we can look for");
@@ -676,7 +676,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void FindShouldNotFindNonExistingItems(string testCase, IEnumerable<long> testData, int itemsCount, in long[] itemIndexes)
 		{
 			_ = testData.Any().Should().BeTrue("we need items on the list that we can look for");
@@ -698,7 +698,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void ForEachShouldGiveItemsInCorrectOrder(string testCase, IEnumerable<long> testData, int itemsCount)
 		{
 			// Prepare
@@ -716,7 +716,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.EmptySourceDataVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.EmptySourceDataTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void ForEachShouldDoNothingWhenEmptyList(string testCase, IEnumerable<long> testData, int itemsCount)
 		{
 			// Prepare
@@ -734,8 +734,8 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexWithRangeVariants), MemberType = typeof(RecyclableLongListTestData))]
-		public void GetRangeShouldReturnCorrectItems(string testCase, IEnumerable<long> testData, int itemsCount, int minBlockSize, in (long ItemIndex, long RangedItemsCount)[] itemRanges)
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexTestCases), MemberType = typeof(RecyclableLongListTestData))]
+		public void GetRangeShouldReturnCorrectItems(string testCase, IEnumerable<long> testData, int itemsCount, in long[] itemIndexes)
 		{
 			_ = testData.Any().Should().BeTrue("we need items on the list that we can look for");
 
@@ -743,12 +743,13 @@ namespace Recyclable.CollectionsTests
 			using var list = new RecyclableLongList<long>(testData, initialCapacity: itemsCount);
 			var expectedData = testData.ToList();
 
-			foreach (var (itemIndex, rangedItemsCount) in itemRanges)
+			foreach (var itemIndex in itemIndexes)
 			{
-				var expectedRangeItems = expectedData.GetRange((int)itemIndex, (int)rangedItemsCount);
+				int startingIndex = (int)Math.Min(1, itemIndex);
+				var expectedRangeItems = expectedData.GetRange(startingIndex, (int)itemIndex);
 
 				// Act
-				using var rangeItems = list.GetRange((int)itemIndex, (int)rangedItemsCount);
+				using var rangeItems = list.GetRange(startingIndex, (int)itemIndex);
 
 				// Validate
 				_ = rangeItems.Count.Should().Be(expectedRangeItems.Count);
@@ -757,7 +758,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void InsertRangeShouldAddItemsInTheRightPosition(string testCase, IEnumerable<long> testData, int itemsCount, in long[] itemIndexes)
 		{
 			// Prepare
@@ -833,7 +834,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void LastIndexOfShouldReturnCorrectIndexes(string testCase, IEnumerable<long> testData, int itemsCount, in long[] itemIndexes)
 		{
 			// Prepare
@@ -853,7 +854,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void LastIndexOfShouldReturnCorrectIndexesWhenConstrainedCount(string testCase, IEnumerable<long> testData, int itemsCount, in long[] itemIndexes)
 		{
 			// Prepare
@@ -873,7 +874,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void LastIndexOfShouldReturnCorrectIndexesWhenConstrainedIndex(string testCase, IEnumerable<long> testData, int itemsCount, in long[] itemIndexes)
 		{
 			// Prepare
@@ -893,7 +894,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void LastIndexOfShouldThrowArgumentOutOfRangeWhenCountTooBig(string testCase, IEnumerable<long> testData, int itemsCount, in long[] itemIndexes)
 		{
 			// Prepare
@@ -909,7 +910,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void InsertRangeShouldMoveItems(string testCase, IEnumerable<long> testData, int itemsCount, in long[] itemIndexes)
 		{
 			foreach (var itemIndex in itemIndexes)
@@ -987,7 +988,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void RemoveAllShouldRemoveTheCorrectItems(string testCase, IEnumerable<long> testData, int itemsCount, in long[] itemIndexes)
 		{
 			// Prepare
@@ -1007,7 +1008,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void RemoveRangeShouldRemoveCorrectItems(string testCase, IEnumerable<long> testData, int itemsCount, in long[] itemIndexes)
 		{
 			_ = testData.Any().Should().BeTrue("we need items on the list that we can look for");
@@ -1030,7 +1031,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void ReverseShouldSwapItemsInCorrectOrder(string testCase, IEnumerable<long> testData, int itemsCount)
 		{
 			// Prepare
@@ -1046,7 +1047,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void ReverseShouldSwapItemsInCorrectOrderWhenConstrained(string testCase, IEnumerable<long> testData, int itemsCount, long[] itemIndexes)
 		{
 			// Prepare
@@ -1069,7 +1070,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void SortShouldSortItemsInCorrectOrder(string testCase, IEnumerable<long> testData, int itemsCount)
 		{
 			// Prepare
@@ -1085,7 +1086,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void SortShouldSortItemsInCorrectOrderWhenWithComparer(string testCase, IEnumerable<long> testData, int itemsCount)
 		{
 			// Prepare
@@ -1102,7 +1103,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void SortShouldSortItemsInCorrectOrderWhenWithComparison(string testCase, IEnumerable<long> testData, int itemsCount)
 		{
 			// Prepare
@@ -1129,7 +1130,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void SortShouldSortItemsInCorrectOrderWhenConstrained(string testCase, IEnumerable<long> testData, int itemsCount, long[] itemIndexes)
 		{
 			// Prepare
@@ -1154,7 +1155,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void TrimExcessShouldDecreaseCapacity(string testCase, IEnumerable<long> testData, int itemsCount)
 		{
 			// Prepare
@@ -1171,7 +1172,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void TrimExcessShouldNotBreakAdd(string testCase, IEnumerable<long> testData, int itemsCount)
 		{
 			// Prepare
@@ -1190,7 +1191,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void TrimExcessShouldNotBreakAddRange(string testCase, IEnumerable<long> testData, int itemsCount)
 		{
 			// Prepare
@@ -1209,7 +1210,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void TrimExcessShouldNotBreakClear(string testCase, IEnumerable<long> testData, int itemsCount)
 		{
 			// Prepare
@@ -1226,7 +1227,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void TrimExcessShouldNotBreakInsert(string testCase, IEnumerable<long> testData, int itemsCount, long[] itemIndexes)
 		{
 			// Prepare
@@ -1252,7 +1253,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void TrimExcessShouldNotBreakRemove(string testCase, IEnumerable<long> testData, int itemsCount, long[] itemIndexes)
 		{
 			// Prepare
@@ -1276,7 +1277,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void TrimExcessShouldNotBreakIndexOf(string testCase, IEnumerable<long> testData, int itemsCount, long[] itemIndexes)
 		{
 			// Prepare
@@ -1296,7 +1297,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void TrimmedArraysShouldNotBePooled(string testCase, IEnumerable<long> testData, int itemsCount)
 		{
 			// Prepare
@@ -1323,7 +1324,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void TrueForAllShouldBeFalseWhenNoMatch(string testCase, IEnumerable<long> testData, int itemsCount, long[] itemIndexes)
 		{
 			// Prepare
@@ -1344,7 +1345,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void TrueForAllShouldBeTrueWhenMatched(string testCase, IEnumerable<long> testData, int itemsCount, long[] itemIndexes)
 		{
 			// Prepare

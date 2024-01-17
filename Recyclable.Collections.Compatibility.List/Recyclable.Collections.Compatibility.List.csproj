@@ -37,7 +37,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="Recyclable.Collections" Version="0.0.6.1" />
+	  <PackageReference Include="Recyclable.Collections" Version="0.0.6.2" />
 	</ItemGroup>
 
 	<ItemGroup>

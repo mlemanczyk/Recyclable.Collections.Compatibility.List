@@ -325,7 +325,7 @@ namespace Recyclable.Collections
 
 			if (index + count > list._longCount || arrayIndex + count > list._longCount)
 			{
-				Compatibility.List.ThrowHelper.ThrowArgumentException_Count();
+				ThrowHelper.ThrowArgumentException_Count();
 			}
 
 			DoCopyTo(list._memoryBlocks, index, list._blockSize, count, array, arrayIndex);

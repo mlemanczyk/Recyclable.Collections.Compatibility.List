@@ -9,7 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="Collections.Benchmarks.Core" Version="0.0.4" />
-    <PackageReference Include="Recyclable.Collections" Version="0.0.6.1" />
+    <PackageReference Include="Recyclable.Collections" Version="0.0.6.2" />
   </ItemGroup>
 
   <ItemGroup>
