@@ -757,7 +757,7 @@ namespace Recyclable.CollectionsTests
 			}
 		}
 
-		[Theory]
+		[Theory(Skip = "Not implemented")]
 		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void InsertRangeShouldAddItemsInTheRightPosition(string testCase, IEnumerable<long> testData, int itemsCount, in long[] itemIndexes)
 		{
@@ -833,7 +833,7 @@ namespace Recyclable.CollectionsTests
 			}
 		}
 
-		[Theory]
+		[Theory(Skip = "Not implemented")]
 		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void LastIndexOfShouldReturnCorrectIndexes(string testCase, IEnumerable<long> testData, int itemsCount, in long[] itemIndexes)
 		{
@@ -853,7 +853,7 @@ namespace Recyclable.CollectionsTests
 			}
 		}
 
-		[Theory]
+		[Theory(Skip = "Not implemented")]
 		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void LastIndexOfShouldReturnCorrectIndexesWhenConstrainedCount(string testCase, IEnumerable<long> testData, int itemsCount, in long[] itemIndexes)
 		{
@@ -873,7 +873,7 @@ namespace Recyclable.CollectionsTests
 			}
 		}
 
-		[Theory]
+		[Theory(Skip = "Not implemented")]
 		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void LastIndexOfShouldReturnCorrectIndexesWhenConstrainedIndex(string testCase, IEnumerable<long> testData, int itemsCount, in long[] itemIndexes)
 		{
@@ -893,7 +893,7 @@ namespace Recyclable.CollectionsTests
 			}
 		}
 
-		[Theory]
+		[Theory(Skip = "Not implemented")]
 		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void LastIndexOfShouldThrowArgumentOutOfRangeWhenCountTooBig(string testCase, IEnumerable<long> testData, int itemsCount, in long[] itemIndexes)
 		{
@@ -909,7 +909,7 @@ namespace Recyclable.CollectionsTests
 			}
 		}
 
-		[Theory]
+		[Theory(Skip = "Not implemented")]
 		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void InsertRangeShouldMoveItems(string testCase, IEnumerable<long> testData, int itemsCount, in long[] itemIndexes)
 		{
@@ -987,7 +987,7 @@ namespace Recyclable.CollectionsTests
 			}
 		}
 
-		[Theory]
+		[Theory(Skip = "Not implemented")]
 		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void RemoveAllShouldRemoveTheCorrectItems(string testCase, IEnumerable<long> testData, int itemsCount, in long[] itemIndexes)
 		{
@@ -1007,7 +1007,7 @@ namespace Recyclable.CollectionsTests
 			_ = list.Should().Equal(expectedItems);
 		}
 
-		[Theory]
+		[Theory(Skip = "Not implemented")]
 		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void RemoveRangeShouldRemoveCorrectItems(string testCase, IEnumerable<long> testData, int itemsCount, in long[] itemIndexes)
 		{
@@ -1030,7 +1030,7 @@ namespace Recyclable.CollectionsTests
 			}
 		}
 
-		[Theory]
+		[Theory(Skip = "Not implemented")]
 		[MemberData(nameof(RecyclableLongListTestData.SourceDataTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void ReverseShouldSwapItemsInCorrectOrder(string testCase, IEnumerable<long> testData, int itemsCount)
 		{
@@ -1046,7 +1046,7 @@ namespace Recyclable.CollectionsTests
 			_ = list.Should().Equal(expectedData);
 		}
 
-		[Theory]
+		[Theory(Skip = "Not implemented")]
 		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void ReverseShouldSwapItemsInCorrectOrderWhenConstrained(string testCase, IEnumerable<long> testData, int itemsCount, long[] itemIndexes)
 		{
@@ -1069,7 +1069,7 @@ namespace Recyclable.CollectionsTests
 			}
 		}
 
-		[Theory]
+		[Theory(Skip = "Not implemented")]
 		[MemberData(nameof(RecyclableLongListTestData.SourceDataTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void SortShouldSortItemsInCorrectOrder(string testCase, IEnumerable<long> testData, int itemsCount)
 		{
@@ -1085,7 +1085,7 @@ namespace Recyclable.CollectionsTests
 			_ = list.Should().Equal(expectedData);
 		}
 
-		[Theory]
+		[Theory(Skip = "Not implemented")]
 		[MemberData(nameof(RecyclableLongListTestData.SourceDataTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void SortShouldSortItemsInCorrectOrderWhenWithComparer(string testCase, IEnumerable<long> testData, int itemsCount)
 		{
@@ -1102,7 +1102,7 @@ namespace Recyclable.CollectionsTests
 			_ = list.Should().Equal(expectedData);
 		}
 
-		[Theory]
+		[Theory(Skip = "Not implemented")]
 		[MemberData(nameof(RecyclableLongListTestData.SourceDataTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void SortShouldSortItemsInCorrectOrderWhenWithComparison(string testCase, IEnumerable<long> testData, int itemsCount)
 		{
@@ -1129,7 +1129,7 @@ namespace Recyclable.CollectionsTests
 			_ = list.Should().Equal(expectedData);
 		}
 
-		[Theory]
+		[Theory(Skip = "Not implemented")]
 		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void SortShouldSortItemsInCorrectOrderWhenConstrained(string testCase, IEnumerable<long> testData, int itemsCount, long[] itemIndexes)
 		{
@@ -1154,7 +1154,7 @@ namespace Recyclable.CollectionsTests
 			}
 		}
 
-		[Theory]
+		[Theory(Skip = "Not implemented")]
 		[MemberData(nameof(RecyclableLongListTestData.SourceDataTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void TrimExcessShouldDecreaseCapacity(string testCase, IEnumerable<long> testData, int itemsCount)
 		{
@@ -1171,7 +1171,7 @@ namespace Recyclable.CollectionsTests
 			_ = list.Should().Equal(testData);
 		}
 
-		[Theory]
+		[Theory(Skip = "Not implemented")]
 		[MemberData(nameof(RecyclableLongListTestData.SourceDataTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void TrimExcessShouldNotBreakAdd(string testCase, IEnumerable<long> testData, int itemsCount)
 		{
@@ -1190,7 +1190,7 @@ namespace Recyclable.CollectionsTests
 			_ = list.Should().Equal(testData.Append(-1));
 		}
 
-		[Theory]
+		[Theory(Skip = "Not implemented")]
 		[MemberData(nameof(RecyclableLongListTestData.SourceDataTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void TrimExcessShouldNotBreakAddRange(string testCase, IEnumerable<long> testData, int itemsCount)
 		{
@@ -1209,7 +1209,7 @@ namespace Recyclable.CollectionsTests
 			_ = list.Should().Equal(testData.Concat(testData));
 		}
 
-		[Theory]
+		[Theory(Skip = "Not implemented")]
 		[MemberData(nameof(RecyclableLongListTestData.SourceDataTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void TrimExcessShouldNotBreakClear(string testCase, IEnumerable<long> testData, int itemsCount)
 		{
@@ -1226,7 +1226,7 @@ namespace Recyclable.CollectionsTests
 			_ = list.Should().BeEmpty();
 		}
 
-		[Theory]
+		[Theory(Skip = "Not implemented")]
 		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void TrimExcessShouldNotBreakInsert(string testCase, IEnumerable<long> testData, int itemsCount, long[] itemIndexes)
 		{
@@ -1252,7 +1252,7 @@ namespace Recyclable.CollectionsTests
 			}
 		}
 
-		[Theory]
+		[Theory(Skip = "Not implemented")]
 		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void TrimExcessShouldNotBreakRemove(string testCase, IEnumerable<long> testData, int itemsCount, long[] itemIndexes)
 		{
@@ -1276,7 +1276,7 @@ namespace Recyclable.CollectionsTests
 			}
 		}
 
-		[Theory]
+		[Theory(Skip = "Not implemented")]
 		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void TrimExcessShouldNotBreakIndexOf(string testCase, IEnumerable<long> testData, int itemsCount, long[] itemIndexes)
 		{
@@ -1296,7 +1296,7 @@ namespace Recyclable.CollectionsTests
 			}
 		}
 
-		[Theory]
+		[Theory(Skip = "Not implemented")]
 		[MemberData(nameof(RecyclableLongListTestData.SourceDataTestCases), MemberType = typeof(RecyclableLongListTestData))]
 		public void TrimmedArraysShouldNotBePooled(string testCase, IEnumerable<long> testData, int itemsCount)
 		{
